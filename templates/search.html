@@ -20,7 +20,7 @@
                 <li>
                     <p>{{ result['title'] }}</p>
                     <p>Authors: {{ result['authors']|join(', ') }}</p>
-                    <a href="{{ result['url'] }}">Research Paper Link</a>
+                    <a href="{{ result['url'] }}" target="_blank">Research Paper Link</a>
                   </li>
                 {% endfor %}
             </ul>

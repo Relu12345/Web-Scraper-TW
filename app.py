@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, session
 from bs4 import BeautifulSoup
-import requests, time
+import requests, time, random
 
 app = Flask(__name__, static_folder='static')
 
@@ -60,7 +60,7 @@ def scrape_google_scholar(query):
             
         print(f'[SCRAPE] Found {len(results)} results')
 
-        time.sleep(1)
+        time.sleep(random.randrange(1, 3))
             
         print(results, "\n")
 
