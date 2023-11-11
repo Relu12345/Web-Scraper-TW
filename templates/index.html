@@ -1,28 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Pacanele wannabe app</title>
-    <link rel="stylesheet" type="text/css" href="static/style.css">
+	<meta charset="UTF-8">
+	<title>Pacanele wannabe app</title>
+	<link rel="stylesheet" type="text/css" href="static/style.css">
 </head>
 <body>
-    <h1>Ia baga si tu ceva aici sa vedem de merge</h1>
-    <form method="POST" action="/search">
-        <label id="search-label" for="search-bar">Search:</label>
-        <input type="text" id="search-bar" name="query" placeholder="Enter keywords">
-        <button id="search-button" type="submit">Search</button>
-    </form>
-    <div id="search-results">
-        {% if results %}
-            <h2>Search Results:</h2>
-            <ul>
-                {% for result in results %}
-                    <li><a href="{{ result[1] }}">{{ result[0] }}</a></li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No results found.</p>
-        {% endif %}
-    </div>
+	<form method="POST" action="/search" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+		<h1>Cauta sefule ceva</h1>
+		<label id="search-label" for="search-bar">Search:</label>
+		<input type="text" id="search-bar" name="query" placeholder="Enter keywords">
+		<button id="search-button" type="submit">Search</button>
+	</form>
 </body>
 </html>

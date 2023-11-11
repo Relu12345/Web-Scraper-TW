@@ -1,8 +1,16 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session
 from bs4 import BeautifulSoup
 import requests, time
 
 app = Flask(__name__, static_folder='static')
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+    'Accept-Language': 'en-US,en;q=0.9',
+    "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
+}
+
+session = requests.Session()
 
 @app.route('/')
 def index():
@@ -14,29 +22,47 @@ def search():
     print(f'[SEARCH] We here!')
     query = request.form.get('query')
     results = scrape_google_scholar(query)
-    return render_template('index.html', results=results)
+    return render_template('search.html', results=results)
 
 def scrape_google_scholar(query):
     print(f'[SCRAPE] We here')
-    url = f'https://www.google.com/scholar?q={query}'
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-
-    print(soup)
-
     results = []
 
-    for result in soup.find_all('h3', class_='gs_rt'):
-        if len(results) >= 9:
-            break
+    for i in range(3):
+        if i == 0:
+            url = f'https://scholar.google.com/scholar?q={query}'
+        else:
+            url = f'https://scholar.google.com/scholar?start={i*10}&q={query}'
+        
+        try:
+            response = session.get(url, headers=headers, timeout=10)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return []
 
-        link = result.a['href']
-        title = result.get_text()
-        results.append((title, link))
+        soup = BeautifulSoup(response.text, 'html.parser')
 
-        time.sleep(2) 
+        for result in soup.select('.gs_ri'):
+            title = result.select_one('.gs_rt').text
+            authors = [i.text for i in result.select('.gs_a')]
+            
+            try:
+                urlPage = result.select_one('a')['href']
+            except TypeError:
+                urlPage = None
+            
+            results.append({
+                'title': title, 
+                'authors': authors,
+                'url': urlPage,
+            })
+            
+        print(f'[SCRAPE] Found {len(results)} results')
 
-    print(results)
+        time.sleep(1)
+            
+        print(results, "\n")
 
     return results
 
