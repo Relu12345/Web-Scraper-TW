@@ -9,7 +9,7 @@
     <h1>Search for research papers</h1>
     <form method="POST" action="/search">
         <label id="search-label" for="search-bar">Search:</label>
-        <input type="text" id="search-bar" name="query" placeholder="Enter keywords">
+        <input type="text" id="search-bar" name="query" required pattern="[A-Za-z ]{5,}" placeholder="Enter keywords">
         <button id="search-button" type="submit">Search</button>
     </form>
     <div id="search-results">
