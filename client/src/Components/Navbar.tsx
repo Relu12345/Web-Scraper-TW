@@ -1,5 +1,5 @@
 import React, {useState} from "react"
-import {BsStack, BsCloudMoonFill  } from 'react-icons/bs/'
+import {BsStack, BsCloudMoonFill, BsFullscreenExit   } from 'react-icons/bs/'
 import { searchText } from "../API/searchText"
 
 interface NavbarProps {
@@ -51,6 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({toggleSidebar}) => {
                 {/* Navigation Links */}
                 <div className="space-x-4 text-xl mt-2 mr-2">
                     <BsCloudMoonFill />
+                    
                 </div>
             </div>
         </nav>

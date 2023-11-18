@@ -6,6 +6,7 @@ import {
 } from "react-icons/bs"
 
 interface sidebarElem {
+    id: number,
     title: string,
     icon: JSX.Element,
 }
@@ -16,14 +17,17 @@ interface sidebarProps {
 
 const sidebarElements = [
     {
+        id: 0,
         "title": "Home",
         "icon": <BsFillHouseDoorFill />,
     },
     {
+        id: 1,
         "title": "History",
         "icon": <BsClockFill />,
     },
     {
+        id: 2,
         "title": "Favotites",
         "icon": <BsFillMoonStarsFill />,
     }
@@ -39,18 +43,18 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible}) => {
             <div className="p-4 flex flex-col h-full justify-between">
                 {/*Sidebar content */}
                 {isVisible ? (
-                    <div className="text-xl">
+                    <ul className="text-xl">
                         {/* Show both the icons and the text of each elem. from sidebarElements */}
                         {sidebarElements.map((elem:sidebarElem) => {
                             return (
-                                <li key={elem.title} className="flex items-center py-2 hover:bg-blue-100 hover:text-blue-700 hover:rounded-md">
+                                <li key={elem.id} className="flex items-center py-2 hover:bg-blue-100 hover:text-blue-700 hover:rounded-md">
                                     <span className="pl-2">{elem.icon}</span>
                                     <p className="text-gray-800 font-semibold pl-2">{elem.title}</p>
                                 </li>
                             )
                         })}
                         
-                    </div>
+                    </ul>
                     
                 ) : (
                     <div className="text-xl">

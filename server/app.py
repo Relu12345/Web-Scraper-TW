@@ -1,10 +1,17 @@
+import os
 from flask import Flask, request, render_template, session, jsonify
 from bs4 import BeautifulSoup
 import requests, time, random
+from api.routes import api 
 from flask_cors import CORS
+from flask_jwt_extended import create_access_token
 
 app = Flask(__name__, static_folder='static')
+#CORS disabled to be able to access the backend from the react frontend
 CORS(app)
+
+#Get the secret key from the .env file
+app.config["JWT_SECRET_KEY"] = os.environ.get('FLASK_JWT')
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
