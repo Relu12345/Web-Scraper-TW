@@ -1,8 +1,17 @@
-from flask import Flask, request, render_template, session
+import os
+from flask import Flask, request, render_template, session, jsonify
 from bs4 import BeautifulSoup
 import requests, time, random
+from api.routes import api 
+from flask_cors import CORS
+from flask_jwt_extended import create_access_token
 
 app = Flask(__name__, static_folder='static')
+#CORS disabled to be able to access the backend from the react frontend
+CORS(app)
+
+#Get the secret key from the .env file
+app.config["JWT_SECRET_KEY"] = os.environ.get('FLASK_JWT')
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
@@ -65,6 +74,15 @@ def scrape_google_scholar(query):
         print(results, "\n")
 
     return results
+
+@app.route('/api/text-api', methods=['POST'])
+def receive_data():
+    try:
+       data = request.get_json()
+       text = data.get('text', '')
+    except Exception as e:
+        print('Error:', str(e))
+        return jsonify({'message' : 'Error processing the request'}), 500
 
 if __name__ == '__main__':
     print(f'[MAIN] We here!')
