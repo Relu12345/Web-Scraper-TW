@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, render_template, session, jsonify
 from bs4 import BeautifulSoup
 import requests, time, random
-from api.routes import api 
+#from api.routes import api 
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token
 
@@ -80,6 +80,8 @@ def receive_data():
     try:
        data = request.get_json()
        text = data.get('text', '')
+       result = scrape_google_scholar(text)
+       return jsonify({'message' : 'Success', 'text' : result})
     except Exception as e:
         print('Error:', str(e))
         return jsonify({'message' : 'Error processing the request'}), 500

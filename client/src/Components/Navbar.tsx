@@ -12,15 +12,17 @@ const Navbar: React.FC<NavbarProps> = ({toggleSidebar}) => {
 
     const handleKeyDown = (event:  React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-          handleSendData();
+            console.log('Enter key pressed');
+            handleSendData();
         }
     }
 
     const handleSendData = async () => {
+        console.log('Sending data:', searchInput);
         const result = await searchText(searchInput)
         
         if (result)
-            console.log("Text sent successfully!")
+            console.log("Text sent successfully!", result)
         else
             console.log("Error sending text")
     }
