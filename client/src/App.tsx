@@ -15,12 +15,10 @@ function App() {
   return (
     <div className="App block">
       {/* Pass the function to the navbar component in order to change the state of the sidebar*/}
-      {/*<Navbar toggleSidebar={toggleStateSidebar}/>
+      <Navbar toggleSidebar={toggleStateSidebar}/>
       <div className='flex justify-between'>
         <Sidebar isVisible={isToggleStateSidebar}/>
       </div>
-  */}
-  <Login />
       
     </div>
   );

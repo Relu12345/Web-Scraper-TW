@@ -8,6 +8,8 @@ const searchText = async(text:string) => {
             body: JSON.stringify({text})
         })
 
+        console.log(await response.json())
+
         if (response.ok) {
             const data = await response.json()
             return data
