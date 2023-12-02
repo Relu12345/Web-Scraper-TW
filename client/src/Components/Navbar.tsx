@@ -2,13 +2,27 @@ import React, {useState} from "react"
 import {BsStack, BsCloudMoonFill, BsFullscreenExit   } from 'react-icons/bs/'
 import { searchText } from "../API/searchText"
 
+interface ResponseMessage {
+    message: string
+    text: ResponseMessageText[]
+}
+
+interface ResponseMessageText {
+    authors: Array<string>,
+    title: string,
+    url: string
+}
+
 interface NavbarProps {
     toggleSidebar: () => void;
+    onUpdateData: (newData: ResponseMessageText[]) => void
   }
 
-const Navbar: React.FC<NavbarProps> = ({toggleSidebar}) => {
+let responseText: ResponseMessageText[] = []
 
+const Navbar: React.FC<NavbarProps> = (props) => {
     const [searchInput, setSearchInput] = useState<string>('')
+    //Store the search result
 
     const handleKeyDown = (event:  React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
@@ -19,18 +33,22 @@ const Navbar: React.FC<NavbarProps> = ({toggleSidebar}) => {
     const handleSendData = async () => {
         const result = await searchText(searchInput)
         
-        if (result)
-            console.log("Text sent successfully!")
+        if (result) {
+            //pass the response data to the onUpdateData callback function
+            const data: ResponseMessage = await result.json()
+            responseText = data.text
+            props.onUpdateData(responseText)
+        }
         else
             console.log("Error sending text")
     }
 
     return (
-        <nav className="bg-white shadow-lg p-4">
+        <nav className="bg-white shadow-lg p-4 ">
             <div className="flex justify-between">
                 {/* Logo */}
                 <div className="text-xl xl:text-2xl font-bold text-gray-800 flex">
-                    <span className="mr-3 mt-1 text-black cursor-pointer" onClick={toggleSidebar}>
+                    <span className="mr-3 mt-1 text-black cursor-pointer" onClick={props.toggleSidebar}>
                         <BsStack />
                     </span>
                     Web Scraper

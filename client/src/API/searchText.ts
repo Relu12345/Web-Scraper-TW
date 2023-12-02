@@ -1,3 +1,9 @@
+interface TextResult {
+    authors: string[],
+    titles: string,
+    url: string
+}
+
 const searchText = async(text:string) => {
     try {
         const response = await fetch(`http://localhost:5000/api/text-api`, {
@@ -8,12 +14,9 @@ const searchText = async(text:string) => {
             body: JSON.stringify({text})
         })
 
-        console.log(await response.json())
-
-        if (response.ok) {
-            const data = await response.json()
-            return data
-        } else {
+        if (response.ok)
+            return response
+        else {
             console.error("Failed to send data to the server: " + response)
             return null
         }
@@ -22,5 +25,6 @@ const searchText = async(text:string) => {
         return null
     }
 }
+
 
 export {searchText}

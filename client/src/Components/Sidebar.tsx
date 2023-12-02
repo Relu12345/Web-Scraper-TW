@@ -35,12 +35,8 @@ const sidebarElements = [
 
 const Sidebar: React.FC<sidebarProps> = ({isVisible}) => {
     return (
-        <aside 
-            className={`fixed h-screen bg-white shadow-md transition-transform ${
-            isVisible ? 'translate-x-0 w-min md:w-1/6 lg:w-60' : 'translate-x-0 w-min'
-      }`}
-        >
-            <div className="p-4 flex flex-col h-full justify-between">
+        <aside>
+            <div className="px-4 h-screen  flex  flex-col  justify-between">
                 {/*Sidebar content */}
                 {isVisible ? (
                     <ul className="text-xl">
@@ -53,7 +49,6 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible}) => {
                                 </li>
                             )
                         })}
-                        
                     </ul>
                     
                 ) : (
@@ -68,7 +63,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible}) => {
                     })}
                     </div>
                 )}
-                <div className="flex mb-20 ">
+                <div className="flex mb-5">
                     <span className="bg-blue-300 px-2 py-1 font-bold text-blue-800 rounded-md mt-2">
                         HC
                     </span>

@@ -81,6 +81,7 @@ def receive_data():
        data = request.get_json()
        text = data.get('text', '')
        result = scrape_google_scholar(text)
+       print(result, "\n")
        return jsonify({'message' : 'Success', 'text' : result})
     except Exception as e:
         print('Error:', str(e))
