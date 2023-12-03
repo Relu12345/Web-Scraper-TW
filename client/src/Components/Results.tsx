@@ -1,0 +1,193 @@
+import React, {useState, useRef} from 'react'
+import { ExportItems } from './ExportItems'
+import {BiSolidRightArrow, BiSolidLeftArrow} from 'react-icons/bi'
+import Select from 'react-select'
+
+interface SearchedData {
+    searchedData: ResponseMessageText[] 
+}
+
+interface ResponseMessageText {
+    authors: Array<string>,
+    title: string,
+    url: string
+}
+
+//No. of results displayed per page
+const displayItems = [
+    {value: 5, label: "5"},
+    {value: 10, label: "10"},
+    {value: 25, label: "25"}
+]
+
+const Results: React.FC<SearchedData> = ({searchedData}) => {
+    const [selectedItems, setSelectedItems] = useState<Array<number>>([])
+
+    /*Table pagination */
+    const [currentPage, setCurrentPage] = useState<number>(1)
+    const [itemsPerPage, setItemsPerPage] = useState<number>(5)
+    const indexOfLastItem: number = currentPage * itemsPerPage
+    const indexOfFirstItem: number = indexOfLastItem - itemsPerPage
+    const currentResults = searchedData.slice(indexOfFirstItem, indexOfLastItem)
+
+
+    const handleSelectedItem = (id: number) => {
+        if (selectedItems.includes(id))
+            setSelectedItems(selectedItems.filter((item) => item !== id))
+        else
+            setSelectedItems([...selectedItems, id])
+    }
+
+    const nextPage = () => {
+        if (indexOfLastItem < (searchedData? searchedData.length : 1))
+            setCurrentPage(currentPage + 1)
+    }
+
+    const prevPage = () => {
+        if (currentPage > 1)
+            setCurrentPage(currentPage - 1)
+    }
+
+    const goToPage = (pageNumber:number) => {
+        setCurrentPage(pageNumber)
+    }
+
+    return (
+        <>
+            {searchedData.length === 0 ? ''
+                : (
+                    <div className="w-11/12 mx-auto mt-4 p-6 bg-white rounded-lg shadow-md">
+            <div className="overflow-x-auto">
+                <>
+                    <div className="flex mb-8 justify-between">
+                        <label className="flex gap-2">
+                            <span className="mt-2">
+                                Show
+                            </span>
+                            <Select
+                                options={displayItems}
+                                placeholder={itemsPerPage}
+                                onChange={(e:any) => setItemsPerPage(e.value)}
+                            />
+                            <span className="mt-2 ml-1">
+                                results
+                            </span>
+                        </label>
+                    </div>
+                </>
+
+                <table
+                    id="results-table" 
+                    className="w-full"
+                >
+                    <thead className='bg-gray-800 text-white'>
+                        <tr>
+                            <th className="p-2">
+                                <div className='flex gap-2 justify-center'>
+                                    Select all 
+                                    <input 
+                                        type="checkbox"
+                                        className="mx-2"
+                                        checked={searchedData.length === selectedItems.length? true: false}
+                                        onChange={() => {
+                                            setSelectedItems(selectedItems.length !== searchedData.length ? 
+                                                searchedData.map((data: ResponseMessageText) => searchedData.indexOf(data)) :
+                                                []       
+                                            )
+                                        }} 
+                                    />
+                                </div>
+                            </th>
+
+                            <th className='p-2'>
+                                <div className='flex gap-2 justify-center'>
+                                    <h1>Title</h1>
+                                </div>
+                            </th>
+                            
+                            <th className='p-2'>
+                                <div className='flex gap-2 justify-center'>
+                                    <h1>Authors</h1>
+                                </div>
+                            </th>
+
+                            <th className='p-2'>
+                                <div className='flex gap-2 justify-center'>
+                                    <h1>Find paper at</h1>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {currentResults.map((data: ResponseMessageText) => (
+                            <tr key={currentResults.indexOf(data)}>
+                                <td className='p-2 font-semibold'>
+                                    <input 
+                                        type="checkbox"
+                                        className='mx-8'
+                                        checked={selectedItems.includes(searchedData.indexOf(data))}
+                                        onChange={() => handleSelectedItem(searchedData.indexOf(data))} 
+                                    />
+                                </td>
+                                <td className='font-medium font-serif'>
+                                    {data.title}
+                                </td>
+                                <td className='p-2'>
+                                    {data.authors.map((author: string) => (
+                                        <div>{author} <br /></div>
+                                    ))}
+                                </td>
+                                <td className='p-10 text-blue-600 font-medium'>
+                                    <a href={data.url}>URL</a>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>    
+            </div>
+
+            {/* Pagination */}
+            <div className='pagination flex justify-end mt-5 mr-2'>
+                {
+                    currentPage !== 1 &&
+                    <button
+                        onClick={prevPage}
+                        disabled={currentPage === 1}
+                        className='hover:text-gray-500 cursor-pointer'
+                    >
+                        <BiSolidLeftArrow size={20} />
+                    </button>
+                }
+                {
+                    Array.from({length: Math.ceil((searchedData? searchedData.length: 1) / itemsPerPage)})
+                        .map(
+                            (_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => goToPage(index + 1)}
+                                    className={`px-3 py-1 rounded-lg ${currentPage === index + 1 ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} mr-2 focus:outline-none`}
+                                >
+                                    {index + 1}
+                                </button>
+                            )
+                        )
+                }
+                
+                <button
+                    onClick={nextPage}
+                    disabled={indexOfLastItem >= (searchedData? searchedData.length: 1)}
+                >   
+                    <BiSolidRightArrow
+                        size={20}
+                        className="hover:text-gray-500 cursor-pointer"
+                    />
+                </button>
+            </div>
+        </div>
+                )
+            }
+        </>
+    )
+}
+
+export default Results
