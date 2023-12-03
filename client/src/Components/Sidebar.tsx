@@ -28,7 +28,7 @@ const sidebarElements = [
     },
     {
         id: 2,
-        "title": "Favotites",
+        "title": "Favorites",
         "icon": <BsFillMoonStarsFill />,
     }
 ]
