@@ -22,11 +22,28 @@ export const ExportItems: React.FC<Items> = ({itemsValue, items, type, handleErr
       return handleError('Please select an item to export!')
     const valuesToExport: ResponseMessageText[] = items.filter((item) => itemsValue.includes(items.indexOf(item)))
     handleError('')
+    
     const response = await ExportFiles(valuesToExport, type)
 
-    if (!response)
-      handleError('Server error')    
+    if (response && response.ok) {
+      const returnedFile = await response.blob()
+
+      const fileUrl = URL.createObjectURL(returnedFile)
+
+      const a = document.createElement('a')
+
+      a.href = fileUrl
+
+      a.download = "your_report.pdf" 
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+
+      URL.revokeObjectURL(fileUrl)
+
+    }
   } 
+
   
 
 
