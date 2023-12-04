@@ -30,6 +30,8 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
     const indexOfFirstItem: number = indexOfLastItem - itemsPerPage
     const currentResults = searchedData.slice(indexOfFirstItem, indexOfLastItem)
 
+    const [error, setError] = useState<string>('')
+
 
     const handleSelectedItem = (id: number) => {
         if (selectedItems.includes(id))
@@ -52,6 +54,10 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
         setCurrentPage(pageNumber)
     }
 
+    const handleErrorAtExport = (value: string) => {
+        setError(value)
+    }
+
     return (
         <>
             {searchedData.length === 0 ? ''
@@ -60,6 +66,20 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
             <div className="overflow-x-auto">
                 <>
                     <div className="flex mb-8 justify-between">
+                        <div>
+                            <button className='bg-gray-600 text-white font-medium p-2 my-4 lg:my-0 mx-2 rounded-md'>
+                                <ExportItems itemsValue={selectedItems} items={searchedData} type={'pdf'} handleError={handleErrorAtExport}/>
+                            </button>
+
+                            <button className='bg-gray-600 text-white font-medium p-2 mx-2 rounded-md'>
+                                <ExportItems itemsValue={selectedItems} items={searchedData} type={'csv'} handleError={handleErrorAtExport}/>
+                            </button>
+
+                            {
+                                error.length > 0 && 
+                                <span className='my-2 mx-2 block text-red-600 font-medium'>{error}</span>
+                            }
+                        </div>
                         <label className="flex gap-2">
                             <span className="mt-2">
                                 Show
@@ -134,11 +154,11 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                 </td>
                                 <td className='p-2'>
                                     {data.authors.map((author: string) => (
-                                        <div>{author} <br /></div>
+                                        <div key={author + data.url}>{author} <br /></div>
                                     ))}
                                 </td>
                                 <td className='p-10 text-blue-600 font-medium'>
-                                    <a href={data.url}>URL</a>
+                                    <a href={data.url} target='_blank'>URL</a>
                                 </td>
                             </tr>
                         ))}
