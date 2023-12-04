@@ -1,6 +1,9 @@
 import React, {useState} from "react"
-import {BsStack, BsCloudMoonFill, BsFullscreenExit   } from 'react-icons/bs/'
+import {BsStack, BsCloudMoonFill } from 'react-icons/bs/'
 import { searchText } from "../API/searchText"
+import { ImExit } from "react-icons/im"
+import {removeTokenFromCookies} from '../API/verifyToken'
+import { useNavigate } from "react-router"
 
 interface ResponseMessage {
     message: string
@@ -21,6 +24,7 @@ interface NavbarProps {
 let responseText: ResponseMessageText[] = []
 
 const Navbar: React.FC<NavbarProps> = (props) => {
+    const navigate = useNavigate()
     const [searchInput, setSearchInput] = useState<string>('')
     //Store the search result
 
@@ -43,6 +47,16 @@ const Navbar: React.FC<NavbarProps> = (props) => {
         }
         else
             console.log("Error sending text")
+    }
+
+
+    const LogoutUser = () => {
+        try {
+            removeTokenFromCookies()
+            navigate("/login")
+        } catch (error) {   
+            console.error("Failed to logout user", error)
+        }
     }
 
     return (
@@ -69,9 +83,12 @@ const Navbar: React.FC<NavbarProps> = (props) => {
                 </div>
 
                 {/* Navigation Links */}
-                <div className="space-x-4 text-xl mt-2 mr-2">
-                    <BsCloudMoonFill />
-                    
+                <div className="space-x-4 text-xl mt-2 flex">
+                    <BsCloudMoonFill className="mx-2"/>
+                    <ImExit 
+                        className="mt-1 cursor-pointer"
+                        onClick={LogoutUser}
+                    />
                 </div>
             </div>
         </nav>

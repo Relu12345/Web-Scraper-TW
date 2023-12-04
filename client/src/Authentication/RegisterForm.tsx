@@ -1,91 +1,138 @@
 import React, {useState} from 'react'
 import { registerUser } from '../API/registerUser';
-import { FaUserAlt, FaEnvelope, FaLock } from "react-icons/fa";
+import { FaUserAlt, FaEnvelope, FaLock } from "react-icons/fa"
+import { useNavigate } from 'react-router'
 
-export const RegisterForm = () => {
+interface Props {
+    handleAuth: (value: boolean) => void
+}
+
+export const RegisterForm: React.FC<Props> = ({handleAuth}) => {
+    const navigate = useNavigate()
+    const [error, setError] = useState<string | null>(null)
     const [username, setUsername] = useState<string>('')
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
+    const [confirmPassword, setConfirmPassword] = useState<string>('')
 
     const handleSubmit = async (e: React.FormEvent<HTMLElement>) => {
         e.preventDefault()
-        const response = await registerUser(username, email, password)
-
-        if (response && response.ok) {
-            console.log("User registration successful")
+        setError(null)
+        if (password !== confirmPassword) {
+            setError("Passwords do not match")
+            return
         }
-        else
-            console.log("User registration failed")
+        try {
+            const response = await registerUser(username, email, password)
+
+            if (response && response.ok) {
+                console.log("User registration successful")
+                console.log(await response.text())
+            }
+            else
+                console.log("User registration failed")
+        } catch (error) {
+            console.error("Failed at sending user registration to the server", error)
+        }
 
     }
 
   return (
     <form onSubmit={handleSubmit}>
-        <label 
-            className='text-lg font-medium font-sans'
-            htmlFor="username"
-        >
-            Username
-            <div>
-                <FaUserAlt 
-                    className='absolute'
-                />
-                <input 
-                    type='text'
-                    required
-                    autoComplete='off'
-                    name='username'
-                    className='my-4 rounded-md border border-gray-600 w-full'
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-            </div>
-        </label>
+             <label 
+                htmlFor="username"
+                className='text-lg font-medium font-mono'
+            >
+                Username
+                <div className='block'>
+                    <FaUserAlt className='text-xl absolute mt-2 ml-2 text-gray-400'/>
+                    <input 
+                        type="text" 
+                        name="username"
+                        required
+                        autoComplete="off"
+                        className='block border-gray-300 font-semibold text-sm w-full border-2 rounded-md my-2 py-2 pl-10'
+                        value={username} 
+                        onChange={(e) => setUsername(e.target.value)} 
+                    />
+                </div>
+            </label>
 
-        <label 
-            className='text-lg font-medium font-sans'
-            htmlFor="email"
-        >
-            Email
-            <div>
-                <FaEnvelope 
-                    className='absolute'
-                />
-                <input 
-                    type='email'
-                    required
-                    name='email'
-                    autoComplete='off'
-                    className='my-4 rounded-md border border-gray-600 w-full'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </div>
-        </label>
+            <label 
+                htmlFor="email"
+                className='text-lg font-medium font-mono'
+            >
+                Email
+                <div className='block'>
+                    <FaEnvelope className='text-xl absolute mt-2 ml-2 text-gray-400'/>
+                    <input 
+                        type="email" 
+                        name="email"
+                        required
+                        autoComplete="off"
+                        className='block border-gray-300 font-semibold text-sm w-full border-2 rounded-md my-2 py-2 pl-10'
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)} 
+                    />
+                </div>
+            </label>
 
-        <label 
-            className='text-lg font-medium font-sans'
-            htmlFor="password"
-        >
-            Password
-            <div>
-                <FaLock 
-                    className='absolute'
-                />
-                <input 
-                    type='password'
-                    required
-                    name='password'
-                    className='my-4 rounded-md border border-gray-600 w-full'
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </div>
-        </label>
+            <label 
+                htmlFor="password"
+                className='text-lg font-medium font-mono'
+                >
+                Password
+                <div className='flex'>
+                    <FaLock className='text-xl absolute mt-4 ml-2 text-gray-400'/>
+                    <input 
+                        type="password"
+                        name="password"
+                        required
+                        className={`block font-semibold text-sm w-full border-2 border-gray-300 rounded-md my-2 py-2 pl-10 `}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)} 
+                    />
+                </div>
+            </label>
 
-        <button className='w-full bg-gray-600 text-lg text-white font-medium rounded-md'>
-            Register
-        </button>
-    </form>
+            <label 
+                htmlFor="confirm_password"
+                className='text-lg font-medium font-mono'
+                >
+                Confirm Password
+                <div className='flex'>
+                    <FaLock className='text-xl absolute mt-4 ml-2 text-gray-400'/>
+                    <input 
+                        type="password"
+                        name="confirm_password"
+                        required
+                        className={`block font-semibold text-sm w-full border-2 border-gray-300 rounded-md my-2 py-2 pl-10 `}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)} 
+                    />
+                </div>
+            </label>
+
+            <button
+                type='submit'
+                className='w-full bg-blue-700 hover:bg-blue-800 text-white text-lg font-semibold rounded-md py-2 my-4'
+            >   
+                Create Account
+            </button>
+            {error && <span className='my-2 text-red-600 font-medium text-lg text-center'>{error}</span>}
+
+            <div className='flex inline-flex items-center justify-center'>
+                <h1 className='text-md font-medium mr-2'>Already a user?</h1>
+                <span 
+                    className='font-medium text-blue-500 cursor-pointer'
+                    onClick={() => navigate("/login")}
+                >
+                    Sign in
+                </span>
+            </div>
+
+            
+        </form>
+
   )
 }

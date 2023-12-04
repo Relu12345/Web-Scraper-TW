@@ -1,20 +1,49 @@
 import React, {useState} from 'react'
 import { loginUser } from '../API/loginUser'
 import { FaLock, FaEnvelope } from 'react-icons/fa'
+import { setTokenInCookies } from '../API/verifyToken'
+import { useNavigate } from 'react-router'
 
-const LoginForm : React.FC = () => {
+interface Props {
+    handleAuth: (value:boolean) => void
+}
 
+const LoginForm : React.FC<Props> = ({handleAuth}) => {
+    const navigate = useNavigate()
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState<string | null>(null)
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setError(null)
 
         const response = await loginUser(email, password)
 
-        if (response && response.ok)
-            console.log(await response.text())
+        if (response && response.ok) {
+            // parse the result from string to JSON
+            console.log(response)
+            const data = JSON.parse(await response.text()) 
+            if (data.result !== 'No result found') {
+                try {
+                    setTokenInCookies(data.token)
+                    console.log(data)
+                    handleAuth(true)
+                } catch (error) {
+                    setError("Failed to login to the server!")
+                    console.error("Faild to send jwt token to the server", error)
+                    handleAuth(false)
+                }
+            } else {
+                setError("Invalid informations!")
+                handleAuth(false)
+                return
+            }
+        }
+        else {
+            setError("Failed to send information to the server!")
+            return
+        }
 
     }
 
@@ -28,7 +57,7 @@ const LoginForm : React.FC = () => {
                 <div className='block'>
                     <FaEnvelope className='text-xl absolute mt-2 ml-2 text-gray-400'/>
                     <input 
-                        type="text" 
+                        type="email" 
                         name="email"
                         required
                         autoComplete="off"
@@ -63,10 +92,16 @@ const LoginForm : React.FC = () => {
             >   
                 Log In
             </button>
+            {error && <span className='my-2 text-red-600 font-medium text-lg text-center'>{error}</span>}
 
             <div className='flex inline-flex items-center justify-center'>
-                <h1 className='text-md font-medium  mr-3'>Don't have an account yet?</h1>
-                <a href="#">Sign up</a>
+                <h1 className='text-md font-medium mr-2'>Don't have an account yet?</h1>
+                <span 
+                    className='font-medium text-blue-500 cursor-pointer'
+                    onClick={() => navigate("/register")}
+                >
+                    Sign up
+                </span>
             </div>
 
             
