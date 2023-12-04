@@ -4,6 +4,8 @@ import Sidebar from './Components/Sidebar'
 import Login from './Authentication/Login'
 import Navbar from './Components/Navbar'
 import Results from './Components/Results'
+import { Register } from './Authentication/Register'
+
 
 interface ResponseMessageText {
   authors: Array<string>,
@@ -47,6 +49,7 @@ const App = () => {
   return (
     <div className="flex flex-col">
       {/* Pass the function to the navbar component in order to change the state of the sidebar*/}
+      {/*
       <Navbar {...callbackFunctions}/>
       <div className='flex'>
         <div className={`${isToggleStateSidebar? ' w-min md:w-2/6 md:w-60' : 'w-min'} h-screen relative bg-white shadow-md `}>
@@ -56,6 +59,8 @@ const App = () => {
         <Results searchedData={searchData} />
         </div>
       </div>
+      */}
+      <Register />
     </div>
   );
 }
