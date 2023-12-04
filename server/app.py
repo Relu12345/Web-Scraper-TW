@@ -177,7 +177,14 @@ def get_export():
                 os.makedirs('server/exports/csv')
             generate_csv(values)
             file = "server\\exports\\csv\\Selected_papers.csv"
-        return send_file(file, as_attachment=True)
+        with open(file, 'rb') as file_content:
+            response = app.response_class(
+                response=file_content.read(),
+                status=200,
+                mimetype='application/pdf' if type == 'pdf' else 'text/csv',
+                headers={'Content-Disposition': f'attachment;filename={file}'}
+            )
+            return response
     except Exception as e:
         print('Error:', str(e))
         return jsonify({'message' : 'Error processing the request'}), 500

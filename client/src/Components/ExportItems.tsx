@@ -34,7 +34,12 @@ export const ExportItems: React.FC<Items> = ({itemsValue, items, type, handleErr
 
       a.href = fileUrl
 
-      a.download = "your_report.pdf" 
+      if (type === 'pdf'){
+        a.download = "your_report.pdf" 
+      }
+      else {
+        a.download = "your_report.csv"
+      }
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)

@@ -1,8 +1,7 @@
 import csv
-import json
 
 def generate_csv(data):
-    with open("server\\exports\\csv\\Selected_papers.csv", "w", newline='', encoding='utf-8') as csvfile:
+    with open("server\\exports\\csv\\Selected_papers.csv", "w", newline='', encoding='utf-8-sig') as csvfile:
         f = csv.writer(csvfile)
 
         # Write CSV Header, If you don't need that, remove this line
