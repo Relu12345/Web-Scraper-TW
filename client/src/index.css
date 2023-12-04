@@ -1,3 +1,8 @@
+.slow-change {
+    @apply transition-colors duration-200;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+

@@ -65,7 +65,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
         <>
             {searchedData.length === 0 ? ''
                 : (
-                    <div className="w-11/12 mx-auto mt-4 p-6 bg-white rounded-lg shadow-md">
+                    <div className="w-11/12 mx-auto mt-4 p-6 bg-white rounded-lg shadow-md dark:bg-slate-700 slow-change">
             <div className="overflow-x-auto">
                 <>
                     <div className="flex mb-8 justify-between">
@@ -83,16 +83,17 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                 <span className='my-2 mx-2 block text-red-600 font-medium'>{error}</span>
                             }
                         </div>
-                        <label className="flex gap-2">
-                            <span className="mt-2">
+                        <label className="flex gap-2 ">
+                            <span className="mt-2 dark:text-white">
                                 Show
                             </span>
                             <Select
                                 options={displayItems}
                                 placeholder={itemsPerPage}
+                                className='dark:bg-gray-600'
                                 onChange={(e:any) => setItemsPerPage(e.value)}
                             />
-                            <span className="mt-2 ml-1">
+                            <span className="mt-2 ml-1 dark:text-white">
                                 results
                             </span>
                         </label>
@@ -152,15 +153,15 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                         onChange={() => handleSelectedItem(searchedData.indexOf(data))} 
                                     />
                                 </td>
-                                <td className='font-medium font-serif'>
+                                <td className='font-medium font-serif dark:text-white'>
                                     {data.title}
                                 </td>
-                                <td className='p-2'>
+                                <td className='p-2 dark:text-white'>
                                     {data.authors.map((author: string) => (
                                         <div key={author + data.url}>{author} <br /></div>
                                     ))}
                                 </td>
-                                <td className='p-10 text-blue-600 font-medium'>
+                                <td className='p-10 text-blue-600 font-medium dark:text-blue-300'>
                                     <a href={data.url} target='_blank'>URL</a>
                                 </td>
                             </tr>
