@@ -59,8 +59,10 @@ const App = () => {
         <Results searchedData={searchData} />
         </div>
       </div>
-      */}
+      
       <Register />
+  */}
+  <Login />
     </div>
   );
 }

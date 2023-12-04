@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import { loginUser } from '../API/loginUser'
 
 const LoginForm : React.FC = () => {
 
@@ -6,19 +7,13 @@ const LoginForm : React.FC = () => {
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState<string | null>(null)
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        setError(null)
 
-        if (email.length === 0) {
-            setError('Email is required')
-            return
-        }
+        const response = await loginUser(email, password)
 
-        if (password.length === 0) {
-            setError('Please enter your password')
-            return
-        }
+        if (response && response.ok)
+            console.log(response.text())
 
     }
 
