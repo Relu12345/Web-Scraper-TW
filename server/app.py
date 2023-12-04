@@ -104,7 +104,7 @@ def get_export():
                 os.makedirs('server/exports/csv')
             generate_csv(values)
             file = "server\\exports\\csv\\Selected_papers.csv"
-        return send_file(file)
+        return send_file(file, as_attachment=True)
     except Exception as e:
         print('Error:', str(e))
         return jsonify({'message' : 'Error processing the request'}), 500

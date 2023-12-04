@@ -14,10 +14,7 @@ const ExportFiles = async (valuesToExport: ResponseMessageText[], type: string) 
             body: JSON.stringify({values: valuesToExport, type: type})
         })
 
-        if (response.ok)
-            return 'Success at sending exportable data to the server'
-        else
-            return 'Failed to send exportable data to the server'
+        return response
     } catch (error) {
         console.error("Error at sending data that has to be exported to the server: ", error)
     }
