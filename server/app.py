@@ -55,9 +55,14 @@ def register():
 
     new_user = users.find_one({'username': user_name})
 
+    access_token = create_access_token(identity = {
+				'username': new_user['username'],
+				'email': new_user['email']
+				})
+
     result = {'email': new_user['email']+' registered'}
 
-    return jsonify({'result':result})
+    return jsonify({'result':result, 'token': access_token})
 
 @app.route("/users/register",methods=['GET'])
 def get_users():
