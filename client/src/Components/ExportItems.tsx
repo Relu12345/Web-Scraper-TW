@@ -22,6 +22,7 @@ export const ExportItems: React.FC<Items> = ({itemsValue, items, type, handleErr
       return handleError('Please select an item to export!')
     const valuesToExport: ResponseMessageText[] = items.filter((item) => itemsValue.includes(items.indexOf(item)))
     handleError('')
+    console.log(JSON.stringify({values: valuesToExport, type: type}))
     const response = await ExportFiles(valuesToExport, type)
 
     if (!response)
