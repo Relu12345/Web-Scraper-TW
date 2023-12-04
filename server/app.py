@@ -95,11 +95,15 @@ def get_export():
         type = data.get('type', '')
         values = data.get('values', '')
         if type == "pdf":
+            if not os.path.exists('server/exports/pdf'):
+                os.makedirs('server/exports/pdf') 
             generate_pdf(values)
-            file = "exports\\pdf\\Selected_papers.pdf"
+            file = "server\\exports\\pdf\\Selected_papers.pdf"
         elif type == "csv":
+            if not os.path.exists('server/exports/csv'):
+                os.makedirs('server/exports/csv')
             generate_csv(values)
-            file = "exports\\csv\\Selected_papers.csv"
+            file = "server\\exports\\csv\\Selected_papers.csv"
         return send_file(file)
     except Exception as e:
         print('Error:', str(e))
