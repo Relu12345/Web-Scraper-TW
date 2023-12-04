@@ -1,10 +1,7 @@
 import React, {useState} from 'react';
 import './index.css'
-import Sidebar from './Components/Sidebar'
 import Login from './Authentication/Login'
-import Navbar from './Components/Navbar'
-import Results from './Components/Results'
-import { Register } from './Authentication/Register'
+import {BrowserRouter} from 'react-router-dom'
 
 
 interface ResponseMessageText {
@@ -47,7 +44,7 @@ const App = () => {
   }
 
   return (
-    <div className="flex flex-col">
+    <>
       {/* Pass the function to the navbar component in order to change the state of the sidebar*/}
       {/*
       <Navbar {...callbackFunctions}/>
@@ -59,9 +56,11 @@ const App = () => {
         <Results searchedData={searchData} />
         </div>
       </div>
-      */}
+      
       <Register />
-    </div>
+  */}
+  <Login />
+    </>
   );
 }
 
