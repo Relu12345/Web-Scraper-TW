@@ -8,7 +8,7 @@ import pymongo
 import requests, time, random
 #from api.routes import api 
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from flask_bcrypt import Bcrypt
 from json_to_pdf import generate_pdf
 from json_to_csv import generate_csv
@@ -95,6 +95,15 @@ def login():
 		result = jsonify({"result": "No result found"})
 
 	return result
+
+
+@app.route("/users/logout", methods=['POST'])
+@jwt_required()
+def logout():
+    jti = get_jwt_identity()
+    access_token = create_access_token(identity=jti, expires_delta=False)
+    return jsonify(logout=True, access_token=access_token)
+
 
 @app.route('/')
 def index():
