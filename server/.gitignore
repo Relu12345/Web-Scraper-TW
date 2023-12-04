@@ -3,3 +3,4 @@ venv
 .idea/
 
 /api/__pycache__
+/__pycache__
