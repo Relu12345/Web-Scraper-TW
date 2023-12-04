@@ -66,12 +66,12 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible}) => {
                 
                 <div className="flex mb-5 justify-end ">
                     <span className="bg-blue-300 px-2 py-1 font-bold text-blue-800 rounded-md mt-2">
-                        HC
+                        AC
                     </span>
                     <div className={`${isVisible? "hidden lg:block" : "hidden"} ml-2 mt-1 `}>
-                        <h6>Horatiu Crisan</h6>
+                        <h6>Aurel-Ionut Coruian</h6>
                         <h6 className="text-sm">
-                            horatiu.crisan01@e-uvt.ro
+                            aurel.coruian02@e-uvt.ro
                         </h6>
                     </div>
                 </div>

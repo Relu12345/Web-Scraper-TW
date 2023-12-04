@@ -56,7 +56,6 @@ const App = () => {
         <Results searchedData={searchData}/>
         </div>
       </div>
-      
     </div>
   );
 }
