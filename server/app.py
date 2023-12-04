@@ -1,10 +1,12 @@
 import os
-from flask import Flask, request, render_template, session, jsonify
+from flask import Flask, request, render_template, session, jsonify, send_file
 from bs4 import BeautifulSoup
 import requests, time, random
 #from api.routes import api 
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token
+from json_to_pdf import generate_pdf
+from json_to_csv import generate_csv
 
 app = Flask(__name__, static_folder='static')
 #CORS disabled to be able to access the backend from the react frontend
@@ -85,6 +87,24 @@ def receive_data():
     except Exception as e:
         print('Error:', str(e))
         return jsonify({'message' : 'Error processing the request'}), 500
+
+@app.route('/api/exportData', methods=['POST'])
+def get_export():
+    try:
+        data = request.get_json()
+        type = data.get('type', '')
+        values = data.get('values', '')
+        if type == "pdf":
+            generate_pdf(values)
+            file = "exports\\pdf\\Selected_papers.pdf"
+        elif type == "csv":
+            generate_csv(values)
+            file = "exports\\csv\\Selected_papers.csv"
+        return send_file(file)
+    except Exception as e:
+        print('Error:', str(e))
+        return jsonify({'message' : 'Error processing the request'}), 500
+
 
 if __name__ == '__main__':
     print(f'[MAIN] We here!')
