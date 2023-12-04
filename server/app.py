@@ -6,6 +6,7 @@ import requests, time, random
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token
 from json_to_pdf import generate_pdf
+from json_to_csv import generate_csv
 
 app = Flask(__name__, static_folder='static')
 #CORS disabled to be able to access the backend from the react frontend
@@ -93,10 +94,12 @@ def get_export():
         data = request.get_json()
         type = data.get('type', '')
         values = data.get('values', '')
-        print(values)
         if type == "pdf":
             generate_pdf(values)
             file = "exports\\pdf\\Selected_papers.pdf"
+        elif type == "csv":
+            generate_csv(values)
+            file = "exports\\csv\\Selected_papers.csv"
         return send_file(file)
     except Exception as e:
         print('Error:', str(e))
