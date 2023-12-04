@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import { registerUser } from '../API/registerUser';
 import { FaUserAlt, FaEnvelope, FaLock } from "react-icons/fa"
 import { useNavigate } from 'react-router'
+import { setTokenInCookies } from '../API/verifyToken';
 
 interface Props {
     handleAuth: (value: boolean) => void
@@ -26,13 +27,20 @@ export const RegisterForm: React.FC<Props> = ({handleAuth}) => {
             const response = await registerUser(username, email, password)
 
             if (response && response.ok) {
-                console.log("User registration successful")
-                console.log(await response.text())
+                const data = JSON.parse(await response.text())
+                console.log(data)
+                setTokenInCookies(data.token)
+                handleAuth(true)
             }
-            else
+            else {
+                setError("User registration failed")
                 console.log("User registration failed")
+                return
+            }
         } catch (error) {
+            setError("Server error: " + error)
             console.error("Failed at sending user registration to the server", error)
+            return
         }
 
     }
@@ -45,13 +53,13 @@ export const RegisterForm: React.FC<Props> = ({handleAuth}) => {
             >
                 Username
                 <div className='block'>
-                    <FaUserAlt className='text-xl absolute mt-2 ml-2 text-gray-400'/>
+                    <FaUserAlt className='text-xl absolute mt-2 ml-2 text-gray-400 dark:text-gray-600'/>
                     <input 
                         type="text" 
                         name="username"
                         required
                         autoComplete="off"
-                        className='block border-gray-300 font-semibold text-sm w-full border-2 rounded-md my-2 py-2 pl-10'
+                        className='block border-gray-300 font-semibold text-sm w-full border-2 rounded-md my-2 py-2 pl-10 dark:text-black'
                         value={username} 
                         onChange={(e) => setUsername(e.target.value)} 
                     />
@@ -64,13 +72,13 @@ export const RegisterForm: React.FC<Props> = ({handleAuth}) => {
             >
                 Email
                 <div className='block'>
-                    <FaEnvelope className='text-xl absolute mt-2 ml-2 text-gray-400'/>
+                    <FaEnvelope className='text-xl absolute mt-2 ml-2 text-gray-400 dark:text-gray-600'/>
                     <input 
                         type="email" 
                         name="email"
                         required
                         autoComplete="off"
-                        className='block border-gray-300 font-semibold text-sm w-full border-2 rounded-md my-2 py-2 pl-10'
+                        className='block border-gray-300 font-semibold text-sm w-full border-2 rounded-md my-2 py-2 pl-10 dark:text-black'
                         value={email}
                         onChange={(e) => setEmail(e.target.value)} 
                     />
@@ -83,12 +91,12 @@ export const RegisterForm: React.FC<Props> = ({handleAuth}) => {
                 >
                 Password
                 <div className='flex'>
-                    <FaLock className='text-xl absolute mt-4 ml-2 text-gray-400'/>
+                    <FaLock className='text-xl absolute mt-4 ml-2 text-gray-400 dark:text-gray-600'/>
                     <input 
                         type="password"
                         name="password"
                         required
-                        className={`block font-semibold text-sm w-full border-2 border-gray-300 rounded-md my-2 py-2 pl-10 `}
+                        className={`block font-semibold text-sm w-full border-2 border-gray-300 rounded-md my-2 py-2 pl-10 dark:text-black`}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)} 
                     />
@@ -101,12 +109,12 @@ export const RegisterForm: React.FC<Props> = ({handleAuth}) => {
                 >
                 Confirm Password
                 <div className='flex'>
-                    <FaLock className='text-xl absolute mt-4 ml-2 text-gray-400'/>
+                    <FaLock className='text-xl absolute mt-4 ml-2 text-gray-400 dark:text-gray-600'/>
                     <input 
                         type="password"
                         name="confirm_password"
                         required
-                        className={`block font-semibold text-sm w-full border-2 border-gray-300 rounded-md my-2 py-2 pl-10 `}
+                        className={`block font-semibold text-sm w-full border-2 border-gray-300 rounded-md my-2 py-2 pl-10 dark:text-black`}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)} 
                     />
@@ -119,7 +127,8 @@ export const RegisterForm: React.FC<Props> = ({handleAuth}) => {
             >   
                 Create Account
             </button>
-            {error && <span className='my-2 text-red-600 font-medium text-lg text-center'>{error}</span>}
+            
+            {error && <span className='block mb-2 text-red-600 font-medium text-lg text-center'>{error}</span>}
 
             <div className='flex inline-flex items-center justify-center'>
                 <h1 className='text-md font-medium mr-2'>Already a user?</h1>

@@ -9,7 +9,11 @@ interface ResponseMessageText {
   url: string
 }
 
-export const Home = () => {
+interface Props {
+  handleTheme: () => void
+}
+
+export const Home: React.FC<Props> = ({handleTheme}) => {
 
     //sidebar toggle functionality
     const [isToggleStateSidebar, setToggleStateSidebar] = useState<boolean>(true)
@@ -26,7 +30,8 @@ export const Home = () => {
   
     const callbackFunctions = {
       toggleSidebar: toggleStateSidebar,
-      onUpdateData: updateSearchData
+      onUpdateData: updateSearchData,
+      handleTheme: handleTheme
     }
 
     return (
@@ -34,7 +39,7 @@ export const Home = () => {
         {/* Pass the function to the navbar component in order to change the state of the sidebar*/}
         
         <Navbar {...callbackFunctions}/>
-        <div className='flex'>
+        <div className='flex dark:bg-gray-800'>
           <div className={`${isToggleStateSidebar? ' w-min md:w-2/6 md:w-60' : 'w-min'} h-screen relative bg-white shadow-md `}>
           <Sidebar isVisible={isToggleStateSidebar} />
           </div>

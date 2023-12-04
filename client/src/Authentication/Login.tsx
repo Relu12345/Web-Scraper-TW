@@ -23,15 +23,15 @@ const Login = () => {
         setIsAuth(value)
     }
     return (
-        <div className='bg-gray-100 w-full flex items-center justify-center h-screen'>
-           <div className='flex w-2/3 bg-gray-50  rounded-lg shadow-lg'>            
+        <div className='bg-gray-100 w-full flex items-center justify-center h-screen dark:bg-gray-800 slow-change'>
+           <div className='flex w-2/3 bg-gray-50  rounded-lg shadow-lg dark:bg-slate-800 slow-change'>            
            <img 
                     src={LoginImage} 
                     alt="Login Page Image"
                     className='hidden xl:block w-3/6'
                 />
 
-                <div className='w-full xl:w-3/4 rounded-md m-14'>
+                <div className='w-full xl:w-3/4 rounded-md m-14 dark:text-white'>
                     <h1 className='text-center font-medium font-sans text-xl mb-4'>Log In</h1>
                     <LoginForm handleAuth={handlePageDisplay}/>   
                 </div>

@@ -55,13 +55,13 @@ const LoginForm : React.FC<Props> = ({handleAuth}) => {
             >
                 Email
                 <div className='block'>
-                    <FaEnvelope className='text-xl absolute mt-2 ml-2 text-gray-400'/>
+                    <FaEnvelope className='text-xl absolute mt-2 ml-2 text-gray-400 dark:text-gray-600'/>
                     <input 
                         type="email" 
                         name="email"
                         required
                         autoComplete="off"
-                        className='block border-gray-300 font-semibold text-sm w-full border-2 rounded-md my-2 py-2 pl-10'
+                        className='block border-gray-300 font-semibold text-sm w-full border-2 rounded-md my-2 py-2 pl-10 dark:text-black'
                         value={email}
                         onChange={(e) => setEmail(e.target.value)} 
                     />
@@ -74,12 +74,12 @@ const LoginForm : React.FC<Props> = ({handleAuth}) => {
                 >
                 Password
                 <div className='flex'>
-                    <FaLock className='text-xl absolute mt-4 ml-2 text-gray-400'/>
+                    <FaLock className='text-xl absolute mt-4 ml-2 text-gray-400 dark:text-gray-600'/>
                     <input 
                         type="password"
                         name="password"
                         required
-                        className={`block font-semibold text-sm w-full border-2 border-gray-300 rounded-md my-2 py-2 pl-10 `}
+                        className={`block font-semibold text-sm w-full border-2 border-gray-300 rounded-md my-2 py-2 pl-10 dark:text-black`}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)} 
                     />
@@ -92,7 +92,8 @@ const LoginForm : React.FC<Props> = ({handleAuth}) => {
             >   
                 Log In
             </button>
-            {error && <span className='my-2 text-red-600 font-medium text-lg text-center'>{error}</span>}
+            
+            {error && <span className='block mb-2 text-red-600 font-medium text-lg text-center'>{error}</span>}
 
             <div className='flex inline-flex items-center justify-center'>
                 <h1 className='text-md font-medium mr-2'>Don't have an account yet?</h1>

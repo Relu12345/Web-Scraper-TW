@@ -1,4 +1,5 @@
-import React from "react"
+import React, {useState} from "react"
+import { getUserInfoFromToken } from "../API/verifyToken"
 import { 
     BsFillHouseDoorFill, 
     BsClockFill,
@@ -33,19 +34,23 @@ const sidebarElements = [
     }
 ]
 
+
 const Sidebar: React.FC<sidebarProps> = ({isVisible}) => {
+    const result = getUserInfoFromToken()?.sub
+    console.log(result)
+    
     return (
         <aside>
-            <div className="px-4 flex h-screen flex-col justify-between">
+            <div className="px-4 flex h-screen flex-col justify-between dark:bg-gray-900">
                 {/*Sidebar content */}
                 {isVisible ? (
                     <ul className="text-xl">
                         {/* Show both the icons and the text of each elem. from sidebarElements */}
                         {sidebarElements.map((elem:sidebarElem) => {
                             return (
-                                <li key={elem.id} className="flex items-center py-2 hover:bg-blue-100 hover:text-blue-700 hover:rounded-md">
+                                <li key={elem.id} className="flex items-center hover:bg-blue-100 hover:text-blue-700 hover:rounded-md dark:text-white hover:dark:text-black hover:dark:bg-white slow-change">
                                     <span className="pl-2">{elem.icon}</span>
-                                    <p className="text-gray-800 font-semibold pl-2">{elem.title}</p>
+                                    <span className="w-full h-full py-2 text-gray-800 font-semibold pl-2 dark:text-white slow-change hover:dark:text-black slow-change">{elem.title}</span>
                                 </li>
                             )
                         })}
@@ -64,14 +69,14 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible}) => {
                     </div>
                 )}
                 
-                <div className="flex mb-5 justify-end ">
+                <div className="flex mb-5  ">
                     <span className="bg-blue-300 px-2 py-1 font-bold text-blue-800 rounded-md mt-2">
                         AC
                     </span>
-                    <div className={`${isVisible? "hidden lg:block" : "hidden"} ml-2 mt-1 `}>
-                        <h6>Aurel-Ionut Coruian</h6>
+                    <div className={`${isVisible? "hidden lg:block" : "hidden"} ml-2 mt-1 dark:text-white`}>
+                        <h6>hello</h6>
                         <h6 className="text-sm">
-                            aurel.coruian02@e-uvt.ro
+                            text@gmail.com
                         </h6>
                     </div>
                 </div>

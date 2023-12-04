@@ -16,7 +16,7 @@ const getTokenFromCookies = () => {
 const getUserInfoFromToken = () => {
     const token = getTokenFromCookies()
 
-    if (token) {
+    if (token !== undefined) {
         const decoded = jwtDecode(token)
         return decoded
     }
