@@ -12,8 +12,14 @@ class PdfConverter(object):
 
     def to_pdf(self, html_str):
         config = pdfkit.configuration(wkhtmltopdf='server\\wkhtmltopdf.exe')
-        return pdfkit.from_string(html_str, None, configuration=config)
-    
+        return pdfkit.from_string(html_str, verbose=True, options=get_options(), configuration=config)
+
+def get_options():
+    return {
+        'encoding': 'UTF-8',
+        'enable-local-file-access': True
+    }
+
 def generate_pdf(data):
     pdfc = PdfConverter()
     with open("server\\exports\\pdf\\Selected_papers.pdf", "wb") as pdf_fl:
