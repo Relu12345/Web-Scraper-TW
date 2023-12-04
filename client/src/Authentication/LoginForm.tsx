@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import { loginUser } from '../API/loginUser'
+import { FaLock, FaEnvelope } from 'react-icons/fa'
 
 const LoginForm : React.FC = () => {
 
@@ -13,51 +14,52 @@ const LoginForm : React.FC = () => {
         const response = await loginUser(email, password)
 
         if (response && response.ok)
-            console.log(response.text())
+            console.log(await response.text())
 
     }
 
     return (
-        <form action="submit">
-            <div className='px-5'>
-                <label 
-                    htmlFor='email'
-                    className='block text-sm font-medium text-gray-500 mb-1'
-                >
-                    Email
-                </label>
-                <input 
-                    id='email'
-                    name='email'
-                    type='email'
-                    autoComplete='email'
-                    required
-                    placeholder='email@example.com'
-                    className='appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                />
-            </div>
+        <form onSubmit={handleSubmit}>
+            <label 
+                htmlFor="email"
+                className='text-lg font-medium font-mono'
+            >
+                Email
+                <div className='block'>
+                    <FaEnvelope className='text-xl absolute mt-2 ml-2 text-gray-400'/>
+                    <input 
+                        type="text" 
+                        name="email"
+                        required
+                        autoComplete="off"
+                        className='block border-gray-300 font-semibold text-sm w-full border-2 rounded-md my-2 py-2 pl-10'
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)} 
+                    />
+                </div>
+            </label>
 
-            <div className='px-5 py-5'>
-                <label 
-                    htmlFor='password'
-                    className='text-sm font-medium text-gray-500 mb-1'
+            <label 
+                htmlFor="password"
+                className='text-lg font-medium font-mono'
                 >
-                    Password
-                </label>
-                <input 
-                    id='password'
-                    name='password'
-                    type='password'
-                    autoComplete='currentPassword'
-                    required
-                    placeholder='example'
-                    className='appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                />
-            </div>
+                Password
+                <div className='flex'>
+                    <FaLock className='text-xl absolute mt-4 ml-2 text-gray-400'/>
+                    <input 
+                        type="password"
+                        name="password"
+                        required
+                        className={`block font-semibold text-sm w-full border-2 border-gray-300 rounded-md my-2 py-2 pl-10 `}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)} 
+                    />
+                </div>
+            </label>
 
             <button
                 type='submit'
-                className='text-white font-semibold w-5/6 mx-5 my-2 py-2 rounded-md bg-blue-500 hover:bg-blue-800'
+                className='w-full bg-blue-700 hover:bg-blue-800 text-white text-lg font-semibold rounded-md py-2 my-4'
             >   
                 Log In
             </button>
