@@ -53,7 +53,7 @@ const App = () => {
         <Sidebar isVisible={isToggleStateSidebar} />
         </div>
         <div className='flex-1 ml-8'>
-        <Results searchedData={searchData}/>
+        <Results searchedData={searchData} />
         </div>
       </div>
     </div>

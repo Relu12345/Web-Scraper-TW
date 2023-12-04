@@ -1,10 +1,10 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import { ExportItems } from './ExportItems'
 import {BiSolidRightArrow, BiSolidLeftArrow} from 'react-icons/bi'
 import Select from 'react-select'
 
 interface SearchedData {
-    searchedData: ResponseMessageText[] 
+    searchedData: ResponseMessageText[]
 }
 
 interface ResponseMessageText {
@@ -23,6 +23,9 @@ const displayItems = [
 const Results: React.FC<SearchedData> = ({searchedData}) => {
     const [selectedItems, setSelectedItems] = useState<Array<number>>([])
 
+    useEffect(() => {
+        setSelectedItems([])
+    }, [searchedData])
     /*Table pagination */
     const [currentPage, setCurrentPage] = useState<number>(1)
     const [itemsPerPage, setItemsPerPage] = useState<number>(5)
