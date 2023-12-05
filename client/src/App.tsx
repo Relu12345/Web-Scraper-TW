@@ -9,9 +9,22 @@ import { PrivateRoutes } from './utils/PrivateRoutes'
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false)
+  const [isDark, setIsDark] = useState('light')
+
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
 
   const handleDarkMode = () => {
     setDarkMode(!darkMode)
+
+    if (darkMode === true) {
+      localStorage.theme = 'light'
+    } else {
+      localStorage.theme = 'dark'
+    }
   }
 
   return (

@@ -61,7 +61,7 @@ const Navbar: React.FC<NavbarProps> = (props) => {
     }
 
     return (
-        <nav className="bg-white shadow-lg p-4 dark:bg-gray-900">
+        <nav className="bg-white shadow-lg p-4 dark:bg-gray-900 slow-change">
             <div className="flex justify-between">
                 {/* Logo */}
                 <div className="text-xl xl:text-2xl font-bold text-gray-800 flex dark:text-white">
@@ -76,7 +76,7 @@ const Navbar: React.FC<NavbarProps> = (props) => {
                     <input
                         type="text"
                         placeholder="Search..."
-                        className="border-2 border-gray-300 bg-gray-100 h-10 w-4/5 lg:w-full xl:w-80 px-5 pr-10 rounded-full focus:outline-none focus:border-gray-500 dark:bg-gray-400 dark:border-gray-400 focus:dark:border-white"
+                        className="border-2 border-gray-300 bg-gray-100 h-10 w-4/5 lg:w-full xl:w-80 px-5 pr-10 rounded-full focus:outline-none focus:border-gray-500 dark:bg-gray-400 dark:border-gray-400 focus:dark:border-white dark:placeholder-gray-800"
                         onChange={(event) => setSearchInput(event.target.value)}
                         value={searchInput}
                         onKeyDown={handleKeyDown}
@@ -87,7 +87,7 @@ const Navbar: React.FC<NavbarProps> = (props) => {
                 <div className="space-x-4 text-xl mt-2 flex">
                     <BsCloudMoonFill 
                         className="mx-2 cursor-pointer"
-                        onClick={() => props.handleTheme()}
+                        onClick={() => {props.handleTheme()}}
                     />
                     <ImExit 
                         className="mt-1 cursor-pointer dark:text-white"
