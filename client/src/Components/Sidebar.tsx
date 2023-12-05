@@ -5,6 +5,7 @@ import {
     BsClockFill,
     BsFillMoonStarsFill 
 } from "react-icons/bs"
+import { split } from "postcss/lib/list"
 
 interface sidebarElem {
     id: number,
@@ -36,8 +37,17 @@ const sidebarElements = [
 
 
 const Sidebar: React.FC<sidebarProps> = ({isVisible}) => {
-    const result = getUserInfoFromToken()?.sub
-    console.log(result)
+    const result = getUserInfoFromToken()?.sub  
+    const email = (result as any).email
+    const user = (result as any).username
+    
+    const halfLength = Math.floor(user.length / 2);
+
+    const firstHalf = user.slice(0, halfLength); 
+    const secondHalf = user.slice(halfLength);
+
+    const splitUser = [firstHalf, secondHalf];
+    const iconUser = splitUser[0][0].toUpperCase() + splitUser[1][0].toUpperCase();
     
     return (
         <aside>
@@ -71,12 +81,12 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible}) => {
                 
                 <div className="flex mb-5  ">
                     <span className="bg-blue-300 px-2 py-1 font-bold text-blue-800 rounded-md mt-2">
-                        AC
+                        {iconUser}
                     </span>
                     <div className={`${isVisible? "hidden lg:block" : "hidden"} ml-2 mt-1 dark:text-white`}>
-                        <h6>hello</h6>
+                        <h6>{user}</h6>
                         <h6 className="text-sm">
-                            text@gmail.com
+                            {email}
                         </h6>
                     </div>
                 </div>
