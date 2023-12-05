@@ -101,13 +101,13 @@ def login():
 				'email': response['email']
 				})
 
-			result = jsonify({"token": access_token})
+			result = jsonify({"token": access_token}), 200
 
 		else:
-			result = jsonify({"error": "Invalid Username or Password"})
+			result = jsonify({"error": "Invalid Username or Password"}), 400
 
 	else:
-		result = jsonify({"result": "No result found"})
+		result = jsonify({"result": "No result found"}), 400
 
 	return result
 
