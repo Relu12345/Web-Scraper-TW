@@ -38,6 +38,7 @@ session = requests.Session()
 
 db = mongo['proiect']
 users = db['register']
+history = db['history']
 
 @app.route("/users/register",methods=['POST'])
 def register():
@@ -47,9 +48,13 @@ def register():
     created = datetime.utcnow()
 
     existing_user = users.find_one({'username': user_name})
+    existing_email = users.find_one({'email': email})
     
     if existing_user:
-        return jsonify({'error': 'Username already exists'})
+        return jsonify({'error': 'Username already exists'}), 400
+    
+    if existing_email:
+        return jsonify({'error': 'Email already exists'}), 400
 
     user_id = users.insert_one({
 		'username': user_name,
@@ -67,7 +72,7 @@ def register():
 
     result = {'email': new_user['email']+' registered'}
 
-    return jsonify({'result':result, 'token': access_token})
+    return jsonify({'result':result, 'token': access_token}), 200
 
 @app.route("/users/register",methods=['GET'])
 def get_users():
@@ -124,10 +129,12 @@ def index():
 def search():
     print(f'[SEARCH] We here!')
     query = request.form.get('query')
-    results = scrape_google_scholar(query)
+    results = scrape_google_scholar(query, '')
     return render_template('search.html', results=results)
 
-def scrape_google_scholar(query):
+def scrape_google_scholar(query, user):
+    insert_history(query, user)
+    
     print(f'[SCRAPE] We here')
     results = []
 
@@ -169,12 +176,32 @@ def scrape_google_scholar(query):
 
     return results
 
+def insert_history(query, user):
+    print("in insert history")
+    search_data = datetime.utcnow()
+    if(user == ''):
+         return None
+    if(history.find_one({'user': user})):
+        history_list = history.find_one({'user': user})['history']
+        history_list.append({'query': query, 'date': search_data})
+        history.update_one({'user': user}, {'$set': {'history': history_list}})
+    else:
+        history_item = {
+            'user': user,
+            'history': [{'query': query, 'date': search_data}],
+        }
+        print("history item", history_item)
+        history.insert_one(history_item)
+        print("after insert")
+
+
 @app.route('/api/text-api', methods=['POST'])
 def receive_data():
     try:
        data = request.get_json()
        text = data.get('text', '')
-       result = scrape_google_scholar(text)
+       user = data.get('username', '')
+       result = scrape_google_scholar(text, user)
        return jsonify({'message' : 'Success', 'text' : result})
     except Exception as e:
         print('Error:', str(e))

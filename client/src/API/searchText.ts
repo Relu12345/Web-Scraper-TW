@@ -1,3 +1,6 @@
+import { jwtDecode } from "jwt-decode";
+import { getTokenFromCookies, getUserInfoFromToken } from "./verifyToken";
+
 interface TextResult {
     authors: string[],
     titles: string,
@@ -6,12 +9,15 @@ interface TextResult {
 
 const searchText = async(text:string) => {
     try {
+        const token = getTokenFromCookies();
+        const decoded = jwtDecode(token!).sub?.username;
+
         const response = await fetch(`http://localhost:5000/api/text-api`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({text})
+            body: JSON.stringify({text, username: decoded})
         })
 
         if (response.ok)
