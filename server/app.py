@@ -46,6 +46,11 @@ def register():
     password = bcyrypt.generate_password_hash(request.get_json()['password']).decode('utf-8')
     created = datetime.utcnow()
 
+    existing_user = users.find_one({'username': user_name})
+    
+    if existing_user:
+        return jsonify({'error': 'Username already exists'})
+
     user_id = users.insert_one({
 		'username': user_name,
 		'email': email,
