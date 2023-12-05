@@ -38,6 +38,8 @@ session = requests.Session()
 
 db = mongo['proiect']
 users = db['register']
+history = db['history']
+
 
 @app.route("/users/register",methods=['POST'])
 def register():
@@ -121,6 +123,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/search', methods=['POST'])
+@jwt_required()
 def search():
     print(f'[SEARCH] We here!')
     query = request.form.get('query')
@@ -128,6 +131,8 @@ def search():
     return render_template('search.html', results=results)
 
 def scrape_google_scholar(query):
+    insert_history(query)
+    
     print(f'[SCRAPE] We here')
     results = []
 
@@ -168,6 +173,22 @@ def scrape_google_scholar(query):
         print(results, "\n")
 
     return results
+
+@jwt_required()
+def insert_history(query):
+    print("in insert history")
+    jti = get_jwt_identity()
+    print(jti)
+    search_data = datetime.utcnow()
+    history_item = {
+        'user_id': 'tbd',
+        'history': query,
+        'date': search_data
+    }
+    print("history item", history_item)
+    history.insert_one(history_item)
+    print("after insert")
+
 
 @app.route('/api/text-api', methods=['POST'])
 def receive_data():
