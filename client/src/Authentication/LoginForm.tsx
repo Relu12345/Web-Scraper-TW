@@ -19,16 +19,16 @@ const LoginForm : React.FC<Props> = ({handleAuth}) => {
         setError(null)
 
         const response = await loginUser(email, password)
+        console.log("raspuns: ",response)
 
         if (response && response.ok) {
             // parse the result from string to JSON
-            console.log(response)
             const data = JSON.parse(await response.text()) 
             if (data.result !== 'No result found') {
                 try {
-                    setTokenInCookies(data.token)
-                    console.log(data)
-                    handleAuth(true)
+                    //setTokenInCookies(data.token)
+                    console.log("daca rasp ok: ", data)
+                   // handleAuth(true)
                 } catch (error) {
                     setError("Failed to login to the server!")
                     console.error("Faild to send jwt token to the server", error)

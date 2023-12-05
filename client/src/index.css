@@ -1,3 +1,7 @@
+body {
+    min-width: 680px;
+}
+
 .slow-change {
     @apply transition-colors duration-300;
 }

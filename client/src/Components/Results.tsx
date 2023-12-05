@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect} from 'react'
 import { ExportItems } from './ExportItems'
 import {BiSolidRightArrow, BiSolidLeftArrow} from 'react-icons/bi'
 import Select from 'react-select'
@@ -61,6 +61,14 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
         setError(value)
     }
 
+    const customStyles = {
+        control: (provided: any, state: any) => ({
+          ...provided,
+          paddingTop: 0,
+          paddingBottom: 0, // Set the top margin to 0
+        }),
+      };
+
     return (
         <>
             {searchedData.length === 0 ? ''
@@ -70,11 +78,11 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                 <>
                     <div className="flex mb-8 justify-between">
                         <div>
-                            <button className='bg-gray-600 text-white font-medium p-2 my-4 lg:my-0 mx-2 rounded-md'>
+                            <button className='bg-gray-600 text-white font-medium p-2 my-4 lg:my-0 mx-2 rounded-md dark:bg-gray-800 hover:dark:bg-slate-900 slow-change'>
                                 <ExportItems itemsValue={selectedItems} items={searchedData} type={'pdf'} handleError={handleErrorAtExport}/>
                             </button>
 
-                            <button className='bg-gray-600 text-white font-medium p-2 mx-2 rounded-md'>
+                            <button className='bg-gray-600 text-white font-medium p-2 my-4 lg:my-0 mx-2 rounded-md dark:bg-gray-800 hover:dark:bg-slate-900 slow-change'>
                                 <ExportItems itemsValue={selectedItems} items={searchedData} type={'csv'} handleError={handleErrorAtExport}/>
                             </button>
 
@@ -90,7 +98,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                             <Select
                                 options={displayItems}
                                 placeholder={itemsPerPage}
-                                className='dark:bg-gray-600'
+                                styles={customStyles}
                                 onChange={(e:any) => setItemsPerPage(e.value)}
                             />
                             <span className="mt-2 ml-1 dark:text-white">
@@ -162,7 +170,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                     ))}
                                 </td>
                                 <td className='p-10 text-blue-600 font-medium dark:text-blue-300'>
-                                    <a href={data.url} target='_blank'>URL</a>
+                                    <a href={data.url} target='_blank' rel="noreferrer">URL</a>
                                 </td>
                             </tr>
                         ))}
