@@ -92,7 +92,7 @@ const LoginForm : React.FC<Props> = ({handleAuth}) => {
             >   
                 Log In
             </button>
-            
+                
             {error && <span className='block mb-2 text-red-600 font-medium text-lg text-center'>{error}</span>}
 
             <div className='flex inline-flex items-center justify-center'>

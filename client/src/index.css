@@ -1,5 +1,5 @@
 .slow-change {
-    @apply transition-colors duration-200;
+    @apply transition-colors duration-300;
 }
 
 @tailwind base;
