@@ -5,6 +5,8 @@ import {Routes, Route} from 'react-router-dom'
 import { Home } from './pages/Home'
 import { Register } from './Authentication/Register'
 import { PrivateRoutes } from './utils/PrivateRoutes'
+import { History } from './pages/History'
+import { Favorites } from './pages/Favorites'
 
 
 const App = () => {
@@ -31,6 +33,8 @@ const App = () => {
         <Routes>
           <Route element={<PrivateRoutes />}>
             <Route element={<Home handleTheme={handleDarkMode}/>} path='/' />
+            <Route element={<History />} path="/history" />
+            <Route element={<Favorites />} path="/favorites" />
           </Route>
           <Route element={<Login />} path='/login' />
           <Route element={<Register />} path='/register' />

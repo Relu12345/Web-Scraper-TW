@@ -119,7 +119,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                     Select all 
                                     <input 
                                         type="checkbox"
-                                        className="my-4 w-4 h-4"
+                                        className="w-4 h-4 my-4"
                                         checked={searchedData.length === selectedItems.length? true: false}
                                         onChange={() => {
                                             setSelectedItems(selectedItems.length !== searchedData.length ? 
