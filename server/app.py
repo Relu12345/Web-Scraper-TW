@@ -51,7 +51,7 @@ def register():
     existing_email = users.find_one({'email': email})
     
     if existing_user:
-        return jsonify({'error': 'Username already exists'}), 400
+        return jsonify({'error': 'Username already exists'}), 401
     
     if existing_email:
         return jsonify({'error': 'Email already exists'}), 400

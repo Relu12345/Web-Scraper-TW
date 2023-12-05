@@ -27,7 +27,7 @@ const Login = () => {
            <div className='flex w-2/3 bg-gray-50  rounded-lg shadow-lg dark:bg-slate-800 slow-change'>            
            <img 
                     src={LoginImage} 
-                    alt="Login Page Image"
+                    alt="Login Page"
                     className='hidden xl:block w-3/6'
                 />
 

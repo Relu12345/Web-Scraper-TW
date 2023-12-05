@@ -1,0 +1,12 @@
+// LoadingScreen.js
+import React from 'react';
+
+const LoadingScreen = () => {
+  return (
+    <div className="flex items-center justify-center h-screen dark:bg-slate-800">
+      <div className="animate-spin rounded-full border-t-4 border-blue-500 border-opacity-100 h-12 w-12"></div>
+    </div>
+  );
+};
+
+export default LoadingScreen;
