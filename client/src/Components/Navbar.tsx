@@ -98,7 +98,7 @@ const Navbar: React.FC<NavbarProps> = (props) => {
                         onClick={props.handleTheme}
                         className="cursor-pointer w-20 h-10 -mt-1 relative rounded-full border-2 border-gray-500 bg-white dark:border-white dark:bg-slate-800">
                         <span className={` w-2/5 h-4/5 absolute rounded-full ml-2 my-1 bg-slate-800 dark:bg-white dark:ml-10 transition-all duration-500`}>
-                            {localStorage.theme === "dark" ? <FaSun className="mt-1 mx-1.5"/> : <BsMoonStars className="mt-1 mx-1.5 text-white"/>}
+                            {localStorage.theme === "dark" ? <BsMoonStars className="mt-1 mx-1.5"/> : <FaSun className="mt-1 mx-1.5 text-white"/>}
                         </span>
                    </div>
                 
