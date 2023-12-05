@@ -119,7 +119,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                     Select all 
                                     <input 
                                         type="checkbox"
-                                        className="mx-2"
+                                        className="w-4 h-4 my-4"
                                         checked={searchedData.length === selectedItems.length? true: false}
                                         onChange={() => {
                                             setSelectedItems(selectedItems.length !== searchedData.length ? 
@@ -156,7 +156,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                 <td className='p-2 font-semibold'>
                                     <input 
                                         type="checkbox"
-                                        className='mx-8'
+                                        className='mx-9 w-4 h-4'
                                         checked={selectedItems.includes(searchedData.indexOf(data))}
                                         onChange={() => handleSelectedItem(searchedData.indexOf(data))} 
                                     />
