@@ -57,7 +57,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible}) => {
                                     key={elem.id} 
                                     onClick={() => navigate(elem.route)}
                                     className="cursor-pointer flex items-center hover:bg-blue-100 hover:text-blue-700 hover:rounded-md dark:text-white hover:dark:text-black hover:dark:bg-white">
-                                    <span className="pl-2 hover:dark:text-black">{elem.icon}</span>
+                                    <span className="pl-2 ">{elem.icon}</span>
                                     <span className="w-full h-full py-2 text-gray-800 font-semibold pl-2 dark:text-white hover:dark:text-black">{elem.title}</span>
                                 </li>
                             )
