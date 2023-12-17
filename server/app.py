@@ -137,12 +137,14 @@ def scrape_google_scholar(query, user):
     
     print(f'[SCRAPE] We here')
     results = []
+    page = 0
 
-    for i in range(3):
-        if i == 0:
-            url = f'https://scholar.google.com/scholar?q={query}'
-        else:
-            url = f'https://scholar.google.com/scholar?start={i*10}&q={query}'
+    #For all the pages
+    #while True:
+
+    #For "i" pages:
+    while page < 3:
+        url = f'https://scholar.google.com/scholar?start={page * 10}&q={query}'
         
         try:
             response = session.get(url, headers=headers, timeout=10)
@@ -152,6 +154,9 @@ def scrape_google_scholar(query, user):
             return []
 
         soup = BeautifulSoup(response.text, 'html.parser')
+
+        if not soup.select('.gs_ri'):
+            break
 
         for result in soup.select('.gs_ri'):
             title = result.select_one('.gs_rt').text
@@ -167,13 +172,12 @@ def scrape_google_scholar(query, user):
                 'authors': authors,
                 'url': urlPage,
             })
-            
-        print(f'[SCRAPE] Found {len(results)} results')
+
+        print(f'[SCRAPE] Found a total of {len(results)} results. Now on page {page + 1}')
 
         time.sleep(random.randrange(1, 3))
+        page += 1
             
-        print(results, "\n")
-
     return results
 
 def insert_history(query, user):
