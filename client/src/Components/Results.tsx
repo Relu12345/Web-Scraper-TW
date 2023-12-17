@@ -1,7 +1,11 @@
 import React, {useState, useEffect} from 'react'
 import { ExportItems } from './ExportItems'
 import {BiSolidRightArrow, BiSolidLeftArrow} from 'react-icons/bi'
+import { MdOutlineStar } from "react-icons/md"
+import { CiStar } from "react-icons/ci"
 import Select from 'react-select'
+
+import {getFavoritesItems, addItemToFavorites, removeItemFromFavorites} from '../API/manageFavorites'
 
 interface SearchedData {
     searchedData: ResponseMessageText[]
@@ -22,8 +26,19 @@ const displayItems = [
 
 const Results: React.FC<SearchedData> = ({searchedData}) => {
     const [selectedItems, setSelectedItems] = useState<Array<number>>([])
+    const [favoritesItems, setFavoritesItems] = useState<ResponseMessageText[]>([])
 
     useEffect(() => {
+        const checkForFavoriteItems = async () => {
+            /*const favoritesList: ResponseMessageText[] = await getFavoritesItems()
+
+            for (let elem of searchedData) {
+                if (favoritesList.includes(elem))
+                    favoritesItems.push(elem)
+            }
+            */
+        }
+        checkForFavoriteItems()
         setSelectedItems([])
     }, [searchedData])
     /*Table pagination */
@@ -41,6 +56,18 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
             setSelectedItems(selectedItems.filter((item) => item !== id))
         else
             setSelectedItems([...selectedItems, id])
+    }
+
+    const handleFavoritesItem = async (id: number) => {
+        const currentItem = searchedData[id]
+        if (favoritesItems.includes(currentItem)) {
+            await addItemToFavorites(currentItem)
+            setFavoritesItems(favoritesItems.filter((item) => item !== currentItem))
+        }
+        else {
+            await removeItemFromFavorites(currentItem)
+            setFavoritesItems([...favoritesItems, currentItem])
+        }
     }
 
     const nextPage = () => {
@@ -67,7 +94,10 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
           paddingTop: 0,
           paddingBottom: 0, // Set the top margin to 0
         }),
-      };
+    }
+
+
+        console.log(favoritesItems)
 
     return (
         <>
@@ -145,7 +175,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
 
                             <th className='p-2'>
                                 <div className='flex gap-2 justify-center'>
-                                    <h1>Find paper at</h1>
+                                    <h1>Add to Favorites</h1>
                                 </div>
                             </th>
                         </tr>
@@ -161,16 +191,26 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                         onChange={() => handleSelectedItem(searchedData.indexOf(data))} 
                                     />
                                 </td>
-                                <td className='font-medium font-serif dark:text-white'>
-                                    {data.title}
+                                <td className='p-4  hover:text-blue-600 font-medium dark:text-blue-300'>
+                                    <a href={data.url} target='_blank' rel="noreferrer">{data.title}</a>
                                 </td>
                                 <td className='p-2 dark:text-white'>
                                     {data.authors.map((author: string) => (
                                         <div key={author + data.url}>{author} <br /></div>
                                     ))}
                                 </td>
-                                <td className='p-10 text-blue-600 font-medium dark:text-blue-300'>
-                                    <a href={data.url} target='_blank' rel="noreferrer">URL</a>
+                                <td className='p-2 '>
+                                    {favoritesItems.includes(data)?
+                                        <MdOutlineStar 
+                                        onClick={() => handleFavoritesItem(searchedData.indexOf(data))}
+                                        className='mx-auto  text-2xl mt-1 text-yellow-600 cursor-pointer'
+                                    />
+                                        :
+                                        <CiStar 
+                                        onClick={() => handleFavoritesItem(searchedData.indexOf(data))}
+                                        className='mx-auto  text-2xl mt-1 text-dark dark:text-white cursor-pointer'
+                                    />
+                                    }
                                 </td>
                             </tr>
                         ))}
