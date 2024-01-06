@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+from threading import Thread
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, session, jsonify, send_file
 from bs4 import BeautifulSoup
@@ -141,7 +142,6 @@ def search():
     return render_template('search.html', results=results)
 
 def scrape_google_scholar(query, user):
-    insert_history(query, user)
     
     print(f'[SCRAPE] We here')
     results = []
@@ -190,8 +190,6 @@ def scrape_google_scholar(query, user):
     return results
 
 def scrape_ieee_xplore(query, user):
-    insert_history(query, user)
-
     print('[SCRAPE IEEE XPLORE] We here')
     results = []
 
@@ -271,10 +269,30 @@ def scrape_ieee_xplore(query, user):
 
     return results
 
+class CustomThread(Thread):
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs)
+        self._return = None
+    
+    def run(self):
+        if self._target is not None:
+            self._return = self._target(*self._args, **self._kwargs)
+            print(self._return)
+
+    def join(self):
+         Thread.join(self)
+         return self._return
 
 def scrape_both_sources(query, user):
-    results_google_scholar = scrape_google_scholar(query, user)
-    results_ieee_xplore = scrape_ieee_xplore(query, user)
+    google_thread = CustomThread(target=scrape_google_scholar, args=(query, user))
+    ieee_thread = CustomThread(target=scrape_ieee_xplore, args=(query, user))
+
+    google_thread.start()
+    ieee_thread.start()
+
+    results_google_scholar = google_thread.join()
+    results_ieee_xplore = ieee_thread.join()
+    # insert_history(query, user)
 
     # Identify common URLs between Google Scholar and IEEE Xplore results
     common_urls = set(result['url'] for result in results_google_scholar).intersection(
@@ -286,7 +304,8 @@ def scrape_both_sources(query, user):
 
     # Add source information to the remaining Google Scholar results
     for result in results_google_scholar:
-        result['source'].append('Google Scholar')
+        if 'Google Scholar' not in result['source']:
+            result['source'].append('Google Scholar')
 
     # Combine results
         
