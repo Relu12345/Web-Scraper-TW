@@ -18,6 +18,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.chrome.options import Options
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
@@ -192,10 +194,13 @@ def scrape_ieee_xplore(query, user):
 
     print('[SCRAPE IEEE XPLORE] We here')
     results = []
-    # driverOptions = webdriver.ChromeOptions()
-    # driverOptions.add_argument('--headless')
-    # driver = webdriver.Chrome(options=driverOptions)
-    driver = webdriver.Chrome()
+
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3')
+    chrome_options.add_argument('window-size=1920x1080')
+
+    driver = webdriver.Chrome(options=chrome_options)
 
     search_url = "https://ieeexplore.ieee.org/"
     driver.get(search_url)
