@@ -4,14 +4,20 @@ from dotenv import load_dotenv
 from flask import Flask, request, render_template, session, jsonify, send_file
 from bs4 import BeautifulSoup
 from flask_pymongo import PyMongo
+
 import pymongo
 import requests, time, random
+
 #from api.routes import api 
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from flask_bcrypt import Bcrypt
 from json_to_pdf import generate_pdf
 from json_to_csv import generate_csv
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
@@ -171,6 +177,7 @@ def scrape_google_scholar(query, user):
                 'title': title, 
                 'authors': authors,
                 'url': urlPage,
+                'source': ['Google Scholar'],
             })
 
         print(f'[SCRAPE] Found a total of {len(results)} results. Now on page {page + 1}')
@@ -179,6 +186,109 @@ def scrape_google_scholar(query, user):
         page += 1
             
     return results
+
+def scrape_ieee_xplore(query, user):
+    insert_history(query, user)
+
+    print('[SCRAPE IEEE XPLORE] We here')
+    results = []
+    # driverOptions = webdriver.ChromeOptions()
+    # driverOptions.add_argument('--headless')
+    # driver = webdriver.Chrome(options=driverOptions)
+    driver = webdriver.Chrome()
+
+    search_url = "https://ieeexplore.ieee.org/"
+    driver.get(search_url)
+
+    try:
+        search_input = WebDriverWait(driver, 1).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'div.global-search-bar input.Typeahead-input'))
+        )
+
+        # Enter search query
+        search_input.send_keys(query)
+
+        # Find and click the search button
+        search_button = WebDriverWait(driver, 1).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.search-icon button.stats-Global_Search_Icon'))
+        )
+        search_button.click()
+
+        page = 1
+        while True:
+            # Wait for the results to load
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'xpl-results-list .List-results-items'))
+            )
+
+            # Your scraping logic here...
+            results_list = driver.find_element("css selector", "xpl-results-list")
+
+            for result_item in results_list.find_elements("css selector", ".List-results-items"):
+                title = result_item.find_element("css selector", "h3 a").text
+                authors = result_item.find_elements("css selector", ".author span")
+                authors_list = [author.text.strip(';').strip() for author in authors if author.text.strip() != '']
+                authors_set = set(authors_list)
+                authors_list = ', '.join(authors_set).lstrip(', ')
+
+                authors = []
+                authors.append(authors_list)
+
+                url = result_item.find_element("css selector", "h3 a").get_attribute("href")
+
+                # Create a dictionary for each result
+                results.append({
+                    "title": title,
+                    "authors": authors,
+                    "url": url,
+                    "source": ["IEEE Xplore"]
+                })
+
+            # Construct the URL for the next page
+            page += 1
+            next_page_url = f"https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText={query}&pageNumber={page}"
+
+            # Navigate to the next page
+            driver.get(next_page_url)
+
+            # Wait for the next page to load
+            time.sleep(5)
+
+            # Check if there are no more pages
+            no_results_message = driver.find_elements(By.CLASS_NAME, "List-results-none")
+            if no_results_message:
+                break
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+    driver.quit()
+
+    return results
+
+
+def scrape_both_sources(query, user):
+    results_google_scholar = scrape_google_scholar(query, user)
+    results_ieee_xplore = scrape_ieee_xplore(query, user)
+
+    # Identify common URLs between Google Scholar and IEEE Xplore results
+    common_urls = set(result['url'] for result in results_google_scholar).intersection(
+        set(result['url'] for result in results_ieee_xplore)
+    )
+
+    # Remove Google Scholar results with common URLs
+    results_google_scholar = [result for result in results_google_scholar if result['url'] not in common_urls]
+
+    # Add source information to the remaining Google Scholar results
+    for result in results_google_scholar:
+        result['source'].append('Google Scholar')
+
+    # Combine results
+        
+    print(f'[SCRAPE BOTH SOURCES] Results:\n{results_google_scholar}\n\n\n{results_ieee_xplore}')
+    return results_google_scholar + results_ieee_xplore
+
+
 
 def insert_history(query, user):
     print("in insert history")
@@ -202,14 +312,14 @@ def insert_history(query, user):
 @app.route('/api/text-api', methods=['POST'])
 def receive_data():
     try:
-       data = request.get_json()
-       text = data.get('text', '')
-       user = data.get('username', '')
-       result = scrape_google_scholar(text, user)
-       return jsonify({'message' : 'Success', 'text' : result})
+        data = request.get_json()
+        text = data.get('text', '')
+        user = data.get('username', '')
+        result = scrape_both_sources(text, user)
+        return jsonify({'message': 'Success', 'text': result})
     except Exception as e:
         print('Error:', str(e))
-        return jsonify({'message' : 'Error processing the request'}), 500
+        return jsonify({'message': 'Error processing the request'}), 500
 
 @app.route('/api/exportData', methods=['POST'])
 def get_export():
