@@ -1,10 +1,12 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import Results from '../Components/Results'
 import { FaHouseChimney, FaMagnifyingGlass } from "react-icons/fa6"
 import Logo from '../Images/logo_transparent-1.svg'
 import WhiteLogo from '../Images/white-logo.png'
 import LoadingScreen from '../utils/LoadingScreen'
 import { searchText } from '../API/searchText'
+import { VscSettings } from "react-icons/vsc"
+import { Filters } from '../Components/Filters'
 
 interface ResponseMessage {
   message: string
@@ -22,6 +24,7 @@ interface ResponseMessageText {
 export const Home: React.FC = () => {
   const [searchInput, setSearchInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [displayFilters, setDisplayFilters] = useState(false)
   const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -49,7 +52,9 @@ export const Home: React.FC = () => {
        loading ? 
         <LoadingScreen />
       :
-      <div className='block mt-4'>
+      <div
+        onClick={() => setDisplayFilters(false)} 
+        className='block mt-4'>
             <div className='flex text-xl font-bold dark:text-white'>
               <FaHouseChimney className='mt-1'/>
               <h1 className='mx-2'>Home</h1>
@@ -69,23 +74,38 @@ export const Home: React.FC = () => {
               
             }
             {/* Search bar */}
-            <div className='flex mx-auto items-center justify-center text-center mt-6 relative'>
-              <input 
-                type="text"
-                id="text"
-                placeholder='Search for your favorite scientific paper...'
-                autoComplete='off'
-                value={searchInput}
-                onKeyDown={handleKeyDown}
-                onChange={(event) => setSearchInput(event.target.value)}
-                className='w-10/12 border-2 border-gray-600 bg-white py-2.5 rounded-md px-2 focus:outline-none focus:border-gray-800 dark:bg-slate-900 dark:border-gray-400 focus:dark:border-gray-200 dark:placeholder-gray-400 dark:text-white slow-change'
-              />
-              <button 
+            <div className='relative mx-auto items-center justify-center text-center mt-6 max-w-screen-xl'>
+              <div className='relative'>
+                <input 
+                  type="text"
+                  id="text"
+                  placeholder='Search for your favorite scientific paper...'
+                  autoComplete='off'
+                  value={searchInput}
+                  onKeyDown={handleKeyDown}
+                  onChange={(event) => setSearchInput(event.target.value)}
+                  className='w-10/12 border-2 border-gray-600 bg-white py-2.5 rounded-md px-2 focus:outline-none focus:border-gray-800 dark:bg-slate-900 dark:border-gray-400 focus:dark:border-gray-200 dark:placeholder-gray-400 dark:text-white slow-change'
+                />
+                <button 
+                  onClick={(e) =>{ e.stopPropagation(); setDisplayFilters(!displayFilters)}}
+                  data-testid="toggle-button"
+                  className='absolute right-32 lg:right-40 xl:right-44 top-1/2 -translate-y-1/2 text-xl rounded-full border border-gray-600 dark:bg-slate-600 p-2 dark:text-white'>
+                  <VscSettings />
+                </button>
+
+                {
+                  displayFilters &&
+                  <Filters />
+                }
+
+                <button 
                 onClick={handleSendData}
                 className='w-1/12 top-0 end-0 h-full py-4 bg-blue-600 dark:bg-blue-700 rounded-md mx-1'
               >
                 <FaMagnifyingGlass className='flex mx-auto text-white ' />
               </button>
+              </div>
+              
             </div>
 
             <Results searchedData={searchData} />
