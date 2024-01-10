@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import re
 from threading import Thread
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, session, jsonify, send_file
@@ -172,6 +173,10 @@ def scrape_google_scholar(query, user):
             
             try:
                 urlPage = result.select_one('a')['href']
+
+                if 'ieeexplore.ieee.org' in urlPage:
+                    urlPage = re.sub(r'/abstract', '', urlPage)
+                
             except TypeError:
                 urlPage = None
             
@@ -292,25 +297,22 @@ def scrape_both_sources(query, user):
 
     results_google_scholar = google_thread.join()
     results_ieee_xplore = ieee_thread.join()
-    # insert_history(query, user)
+    insert_history(query, user)
 
-    # Identify common URLs between Google Scholar and IEEE Xplore results
-    common_urls = set(result['url'] for result in results_google_scholar).intersection(
-        set(result['url'] for result in results_ieee_xplore)
-    )
+    url_to_result = {}
+    for result in results_google_scholar + results_ieee_xplore:
+        url = result['url']
+        if url not in url_to_result:
+            url_to_result[url] = result
+        else:
+            # Merge sources if duplicate URL
+            url_to_result[url]['source'].extend(result['source'])
 
-    # Remove Google Scholar results with common URLs
-    results_google_scholar = [result for result in results_google_scholar if result['url'] not in common_urls]
+    # Deduplicate results
+    results = list(url_to_result.values())
 
-    # Add source information to the remaining Google Scholar results
-    for result in results_google_scholar:
-        if 'Google Scholar' not in result['source']:
-            result['source'].append('Google Scholar')
-
-    # Combine results
-        
-    print(f'[SCRAPE BOTH SOURCES] Results:\n{results_google_scholar}\n\n\n{results_ieee_xplore}')
-    return results_google_scholar + results_ieee_xplore
+    print(f'[SCRAPE BOTH SOURCES] Results:\n{results}')
+    return results
 
 
 
