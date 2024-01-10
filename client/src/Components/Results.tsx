@@ -97,7 +97,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
     }
 
 
-        console.log(favoritesItems)
+        //console.log(favoritesItems)
 
     return (
         <>

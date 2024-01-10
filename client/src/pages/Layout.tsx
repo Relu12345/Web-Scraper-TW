@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {MutableRefObject, useEffect, useState} from 'react'
 import Sidebar from '../Components/Sidebar'
 import Navbar from '../Components/Navbar'
 import { Outlet } from 'react-router-dom'
@@ -6,6 +6,8 @@ import LoadingScreen from '../utils/LoadingScreen'
 
 interface Props {
     handleTheme: () => void
+    searchElement: string | null
+    handleSidebarState : (value: boolean) => void
 }
 
 interface ResponseMessageText {
@@ -14,15 +16,24 @@ interface ResponseMessageText {
     url: string
 }
 
-export const Layout: React.FC<Props> = ({handleTheme}) => {
+export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSidebarState}) => {
     const [loading, setLoading] = useState(false) 
     //sidebar toggle functionality
-    const [isToggleStateSidebar, setToggleStateSidebar] = useState<boolean>(true)
+    const [isToggleStateSidebar, setIsToggleStateSidebar] = useState<boolean>(false)
     //gettin the search result from the navbar
-    const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
-  
+    //const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
+
+    useEffect(() => {
+        handleSidebarState(isToggleStateSidebar)
+    }, [isToggleStateSidebar])
+
+
     const toggleStateSidebar = () => {
-      setToggleStateSidebar(!isToggleStateSidebar)
+        setIsToggleStateSidebar(!isToggleStateSidebar)
+    }
+
+    const closeSidebar = (value: boolean) => {
+        setIsToggleStateSidebar(false)
     }
   
 
@@ -38,9 +49,13 @@ export const Layout: React.FC<Props> = ({handleTheme}) => {
     return (
         <div className='w-full'>
             <Navbar {...callbackFunctions} />
-            <div className='flex dark:bg-slate-800 slow-change'>
-                <div className={`${isToggleStateSidebar? ' w-min md:w-2/6 md:w-60' : 'w-min'} flex relative bg-white shadow-md dark:bg-gray-900 slow-change`}>
-                    <Sidebar isVisible={isToggleStateSidebar} />
+            <div className='flex dark:bg-slate-800 slow-change'>                
+                <div className={`${isToggleStateSidebar? 'fixed top-0 h-full  w-3/6 md:w-2/6 md:w-60 bg-white shadow-md dark:bg-gray-900 slow-change z-50' : 'hidden'} `}>
+                    <Sidebar 
+                        isVisible={isToggleStateSidebar} 
+                        latestSearch={searchElement}
+                        onClose={closeSidebar}
+                    />
                 </div>
                 <div className='flex-1 ml-1 lg:ml-8 dark:bg-slate-800'>
                     {

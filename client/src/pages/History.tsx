@@ -5,10 +5,10 @@ import {
 
 export const History = () => {
   return (
-    <div className='h-screen text-lg dark:bg-slate-800 dark:text-white'>
+    <div className='h-screen text-xl dark:bg-slate-800 dark:text-white'>
       <div className='mt-4 flex'>
-        <BsClockFill className='text-xl mt-1 dark:text-white'/>
-        <h1 className='ml-2 text-lg font-bold'>History</h1>
+        <BsClockFill className='mt-1 dark:text-white'/>
+        <h1 className='ml-2 font-bold'>History</h1>
       </div>
     </div>
   )

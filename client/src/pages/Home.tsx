@@ -1,12 +1,18 @@
 import React, {useState, useEffect, useRef} from 'react'
 import Results from '../Components/Results'
 import { FaHouseChimney, FaMagnifyingGlass } from "react-icons/fa6"
+import { IoSettings } from "react-icons/io5"
 import Logo from '../Images/logo_transparent-1.svg'
 import WhiteLogo from '../Images/white-logo.png'
 import LoadingScreen from '../utils/LoadingScreen'
 import { searchText } from '../API/searchText'
 import { VscSettings } from "react-icons/vsc"
 import { Filters } from '../Components/Filters'
+
+interface Props {
+  searchElement: (element: string) => void
+  sidebarState : boolean
+}
 
 interface ResponseMessage {
   message: string
@@ -21,40 +27,44 @@ interface ResponseMessageText {
 
 
 
-export const Home: React.FC = () => {
+export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
   const [searchInput, setSearchInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [displayFilters, setDisplayFilters] = useState(false)
   const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
+  const inputToSend = useRef<HTMLInputElement | null>(null)
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      console.log('Enter key pressed')
+     //console.log('Enter key pressed')
       handleSendData()
     }
   }
 
-  const handleSendData = async () => {
+  const handleSendData =  () => {
+
     if (searchInput.length > 0) {
-      setLoading(true)
-      console.log('Sending data ', searchInput)
-      const result = await searchText(searchInput)
+      //setLoading(true)
+      searchElement(inputToSend.current?.value || '')
+      //console.log('Sending data ', searchInput)
+      /*const result = await searchText(searchInput)
 
       if (result) {
         const data: ResponseMessage = await result.json()
         setSearchData(data.text)
         setLoading(false)
       }
+      */
     }
   }
-  
+
     return (
        loading ? 
         <LoadingScreen />
       :
       <div
         onClick={() => setDisplayFilters(false)} 
-        className='block mt-4'>
+        className='block h-screen  mt-4'>
             <div className='flex text-xl font-bold dark:text-white'>
               <FaHouseChimney className='mt-1'/>
               <h1 className='mx-2'>Home</h1>
@@ -62,19 +72,19 @@ export const Home: React.FC = () => {
 
             
             {searchData.length === 0 &&
-            <div>
-              {
-                localStorage.theme === 'dark' ?
-                <img src={WhiteLogo} className='flex w-1/3 2xl:w-1/4 items-center justify-center mx-auto' alt="White logo" /> :
-                <img src={Logo} className='flex w-1/3 2xl:w-1/4 items-center justify-center mx-auto' alt="Logo" /> 
-              }
-              
-              <h1 className='w-1/2 text-sm lg:text-lg mx-auto text-center font-semibold dark:text-white'>Revolutionize Your Research Journey: FetchFlow - Empowering Minds, Unveiling Potential</h1>
-            </div> 
-              
+              <div>
+                {
+                  localStorage.theme === 'dark' ?
+                  <img src={WhiteLogo} className='flex w-1/3 2xl:w-1/4 items-center justify-center mx-auto' alt="White logo" /> :
+                  <img src={Logo} className='flex w-1/3 2xl:w-1/4 items-center justify-center mx-auto' alt="Logo" /> 
+                }
+                
+                <h1 className='w-1/2 text-sm lg:text-lg mx-auto text-center font-semibold dark:text-white'>Revolutionize Your Research Journey: FetchFlow - Empowering Minds, Unveiling Potential</h1>
+              </div> 
             }
+
             {/* Search bar */}
-            <div className='relative mx-auto items-center justify-center text-center mt-6 max-w-screen-xl'>
+            <div className='fiexed mx-auto items-center justify-center text-center mt-6 max-w-screen-xl'>
               <div className='relative'>
                 <input 
                   type="text"
@@ -83,25 +93,27 @@ export const Home: React.FC = () => {
                   autoComplete='off'
                   value={searchInput}
                   onKeyDown={handleKeyDown}
-                  onChange={(event) => setSearchInput(event.target.value)}
-                  className='w-10/12 border-2 border-gray-600 bg-white py-2.5 rounded-md px-2 focus:outline-none focus:border-gray-800 dark:bg-slate-900 dark:border-gray-400 focus:dark:border-gray-200 dark:placeholder-gray-400 dark:text-white slow-change'
+                  ref={inputToSend}
+                  onChange={(event) => {setSearchInput(event.target.value)}}
+                  className={`
+                    ${sidebarState ? 'w-3/4 lg:w-1/2 xl:w-7/12 2xl:w-10/12 ml-0 lg:ml-24 2xl:ml-0' : 'w-3/4 lg:w-10/12'}  border-2 border-gray-400 bg-white py-2.5 
+                    rounded-md px-2 focus:outline-none focus:border-black 
+                    dark:bg-slate-900 dark:border-gray-400 
+                    focus:dark:border-gray-200 dark:placeholder-gray-400 
+                    dark:text-white slow-change
+                  `}
                 />
                 <button 
                   onClick={(e) =>{ e.stopPropagation(); setDisplayFilters(!displayFilters)}}
                   data-testid="toggle-button"
-                  className='absolute right-32 lg:right-40 xl:right-44 top-1/2 -translate-y-1/2 text-xl rounded-full border border-gray-600 dark:bg-slate-600 p-2 dark:text-white'>
+                  className='relative mx-2 text-xl text-white p-3.5 top-1 rounded-md bg-gray-600 dark:bg-slate-600 '>
                   <VscSettings />
                 </button>
 
-                {
-                  displayFilters &&
-                  <Filters />
-                }
-
                 <button 
-                onClick={handleSendData}
-                className='w-1/12 top-0 end-0 h-full py-4 bg-blue-600 dark:bg-blue-700 rounded-md mx-1'
-              >
+                  onClick={handleSendData}
+                  className='w-1/12 h-full mr-4 py-4  bg-blue-600 dark:bg-blue-700 rounded-md'
+                >
                 <FaMagnifyingGlass className='flex mx-auto text-white ' />
               </button>
               </div>
@@ -109,6 +121,15 @@ export const Home: React.FC = () => {
             </div>
 
             <Results searchedData={searchData} />
+
+            {
+              displayFilters &&
+                <Filters 
+                  open={displayFilters} 
+                  onClose={() => setDisplayFilters(false)}
+                />
+            }
+            
         </div>
     )
 }
