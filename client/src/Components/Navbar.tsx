@@ -29,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = (props) => {
         <nav className=" bg-white shadow-lg p-4 dark:bg-gray-900 slow-change">
             <div className="flex justify-between">
                 {/* Logo */}
-                <div className="text-xl xl:text-2xl font-bold text-gray-800 flex dark:text-white">
+                <div className="my-2 text-xl xl:text-2xl font-bold text-gray-800 flex dark:text-white">
                     <span className="mr-3 mt-1 text-black dark:text-white cursor-pointer" onClick={props.toggleSidebar}>
                         <BsStack />
                     </span>
@@ -37,6 +37,21 @@ const Navbar: React.FC<NavbarProps> = (props) => {
                 </div>
 
                 {/* Navigation Links */}
+                <div className="flex ml-10 my-2 text-md lg:text-lg font-bold dark:text-white ">
+                    <button 
+                        onClick={() => navigate("/")}
+                        className="flex mx-2 lg:mx-8 hover:text-blue-700 dark:hover:text-gray-400"
+                    >
+                        Home
+                    </button>
+
+                    <button 
+                        onClick={() => navigate("/favorites")}
+                        className="flex mx-2 lg:mx-8 hover:text-blue-700 dark:hover:text-gray-400"
+                    >
+                        Favorites
+                    </button>
+                </div>
                 
                 <div className="flex space-x-4 text-xl mt-2 ">
                    <div 
