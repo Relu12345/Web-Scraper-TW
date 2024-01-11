@@ -64,8 +64,8 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
       :
       <div
         onClick={() => setDisplayFilters(false)} 
-        className='block h-screen  mt-4'>
-            <div className='flex text-xl font-bold dark:text-white'>
+        className='block h-screen'>
+            <div className='flex text-xl pt-2 font-bold dark:text-white'>
               <FaHouseChimney className='mt-1'/>
               <h1 className='mx-2'>Home</h1>
             </div>
@@ -84,8 +84,8 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
             }
 
             {/* Search bar */}
-            <div className='fiexed mx-auto items-center justify-center text-center mt-6 max-w-screen-xl'>
-              <div className='relative'>
+            <div className='fiexed  items-center justify-center md:text-center mt-6'>
+              <div className='relative w-full'>
                 <input 
                   type="text"
                   id="text"
@@ -96,7 +96,7 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
                   ref={inputToSend}
                   onChange={(event) => {setSearchInput(event.target.value)}}
                   className={`
-                    ${sidebarState ? 'w-3/4 lg:w-1/2 xl:w-7/12 2xl:w-10/12 ml-0 lg:ml-24 2xl:ml-0' : 'w-3/4 lg:w-10/12'}  border-2 border-gray-400 bg-white py-2.5 
+                    ${sidebarState ? 'w-1/2 lg:w-1/2 xl:w-7/12 2xl:w-10/12 ml-0 lg:ml-24 2xl:ml-0' : 'w-1/2 lg:w-10/12'}  border-2 border-gray-400 bg-white py-2.5 
                     rounded-md px-2 focus:outline-none focus:border-black 
                     dark:bg-slate-900 dark:border-gray-400 
                     focus:dark:border-gray-200 dark:placeholder-gray-400 
@@ -112,10 +112,10 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
 
                 <button 
                   onClick={handleSendData}
-                  className='w-1/12 h-full mr-4 py-4  bg-blue-600 dark:bg-blue-700 rounded-md'
+                  className='w-1/12 h-full py-4  bg-blue-600 dark:bg-blue-700 rounded-md'
                 >
-                <FaMagnifyingGlass className='flex mx-auto text-white ' />
-              </button>
+                  <FaMagnifyingGlass className='flex mx-auto text-white ' />
+                </button>
               </div>
               
             </div>

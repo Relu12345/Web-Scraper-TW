@@ -65,12 +65,10 @@ export const YearSlider: React.FC<Props> = ({min, max, name, forid}) => {
                     </label>
                 </div>
 
-                <hr className='flex mt-8 w-1/6 border bg-gray-800 mx-2 dark:border-white'/>
-
-                <div className='flex my-4 justify-end items-end'>
+                <div className='flex my-4'>
                     <label 
                         htmlFor="end-year"
-                        className='text-gray-800 dark:text-white font-semibold'
+                        className='flex justify-end text-gray-800 dark:text-white font-semibold'
                     >
                         End year
                         <input 
@@ -113,8 +111,8 @@ export const YearSlider: React.FC<Props> = ({min, max, name, forid}) => {
                 />
             </div>
 
-            <p className='my-4 text-lg text-black dark:text-white'>
-                Selected range:
+            <p className='mt-8 text-lg text-black dark:text-white'>
+                Selected range of years
                 <span className='font-semibold mx-2'>
                     {`${inputFrom} - ${inputTo}`}
                 </span>

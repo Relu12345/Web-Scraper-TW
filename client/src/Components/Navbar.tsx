@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import {BsStack, BsMoonStars} from 'react-icons/bs/'
 import {removeTokenFromCookies} from '../API/verifyToken'
 import { useNavigate } from "react-router"
@@ -10,6 +10,7 @@ interface NavbarProps {
     toggleSidebar: () => void;
     handleTheme: () => void
     handleLoading: (value: boolean) => void
+    displayProfile: boolean
   }
 
 
@@ -26,13 +27,13 @@ const Navbar: React.FC<NavbarProps> = (props) => {
     }
 
     return (
-        <nav className=" bg-white shadow-lg p-4 dark:bg-gray-900 slow-change">
+        <nav className=" bg-white fixed w-full shadow-lg p-4 dark:bg-gray-900 slow-change">
             <div className="flex justify-between">
                 {/* Logo */}
                 <div className="my-2 text-xl xl:text-2xl font-bold text-gray-800 flex dark:text-white">
-                    <span className="mr-3 mt-1 text-black dark:text-white cursor-pointer" onClick={props.toggleSidebar}>
+                    <button className="mx-3 mt-1 text-black dark:text-white cursor-pointer" onClick={props.toggleSidebar}>
                         <BsStack />
-                    </span>
+                    </button>
                     FetchFlow
                 </div>
 
@@ -40,14 +41,14 @@ const Navbar: React.FC<NavbarProps> = (props) => {
                 <div className="flex ml-10 my-2 text-md lg:text-lg font-bold dark:text-white ">
                     <button 
                         onClick={() => navigate("/")}
-                        className="flex mx-2 lg:mx-8 hover:text-blue-700 dark:hover:text-gray-400"
+                        className="flex mx-2 lg:mx-8 text-lg lg:text-xl hover:text-blue-700 dark:hover:text-gray-400"
                     >
                         Home
                     </button>
 
                     <button 
                         onClick={() => navigate("/favorites")}
-                        className="flex mx-2 lg:mx-8 hover:text-blue-700 dark:hover:text-gray-400"
+                        className="flex mx-2 lg:mx-8  text-lg lg:text-xl hover:text-blue-700 dark:hover:text-gray-400"
                     >
                         Favorites
                     </button>
@@ -62,7 +63,10 @@ const Navbar: React.FC<NavbarProps> = (props) => {
                         </span>
                    </div>
                 
-                    <Profile handleLogout={LogoutUser}/>
+                    <Profile 
+                        handleLogout={LogoutUser}
+                        displayProfile={props.displayProfile}
+                    />
                 </div>
             </div>
         </nav>

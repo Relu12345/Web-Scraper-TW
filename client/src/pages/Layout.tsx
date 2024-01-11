@@ -22,6 +22,8 @@ export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSideb
     const [isToggleStateSidebar, setIsToggleStateSidebar] = useState<boolean>(false)
     //gettin the search result from the navbar
     //const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
+    //Close profile description 
+    const [isToggleProfile, setIsToggleProfile] = useState(true)
 
     useEffect(() => {
         handleSidebarState(isToggleStateSidebar)
@@ -40,24 +42,42 @@ export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSideb
     const handleLoading = (value: boolean) =>{
       setLoading(value)
     }
+
+    const handleProfileToggle = (value: boolean) => {
+        setIsToggleProfile(value)
+    }
+
   
     const callbackFunctions = {
       toggleSidebar: toggleStateSidebar,
       handleTheme: handleTheme,
-      handleLoading: handleLoading
+      handleLoading: handleLoading,
+      displayProfile: isToggleProfile
     }
+
     return (
-        <div className='w-full'>
+        <div 
+            
+            className='w-full'
+        >
             <Navbar {...callbackFunctions} />
-            <div className='flex dark:bg-slate-800 slow-change'>                
-                <div className={`${isToggleStateSidebar? 'fixed top-0 h-full  w-3/6 md:w-2/6 md:w-60 bg-white shadow-md dark:bg-gray-900 slow-change z-50' : 'hidden'} `}>
+            <div 
+                onClick={() => setIsToggleProfile(false)}
+                className='flex dark:bg-slate-800 slow-change'
+            >                
+                <div className={`
+                        ${isToggleStateSidebar ? 
+                        "fixed top-0 h-full  w-2/6 md:w-2/6 md:w-60 bg-white shadow-md dark:bg-gray-900 slow-change z-50 opacity-100" : 'opacity-0'} 
+                        transition-all duration-300`
+                    }
+                >
                     <Sidebar 
                         isVisible={isToggleStateSidebar} 
                         latestSearch={searchElement}
                         onClose={closeSidebar}
                     />
                 </div>
-                <div className='flex-1 ml-1 lg:ml-8 dark:bg-slate-800'>
+                <div className='flex-1 dark:bg-slate-800'>
                     {
                         loading ?
                         <LoadingScreen /> :
