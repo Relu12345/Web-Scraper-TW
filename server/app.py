@@ -136,7 +136,6 @@ def index():
     return render_template('index.html')
 
 @app.route('/search', methods=['POST'])
-@jwt_required()
 def search():
     print(f'[SEARCH] We here!')
     query = request.form.get('query')
