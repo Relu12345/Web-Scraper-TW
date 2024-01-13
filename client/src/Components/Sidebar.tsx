@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useRef } from "react"
 import { useNavigate } from "react-router"
 import Typewriter from '../utils/Typewriter'
+import { useWindowSize } from "../utils/useWindowSize"
 import { IoMdClose } from "react-icons/io"
+import { MdDelete } from "react-icons/md"
+import { DeleteDialog } from "./DeleteDialog"
 import { 
     BsFillHouseDoorFill, 
     BsClockFill,
@@ -52,32 +55,37 @@ const sidebarElements = [
 
 const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => {
     const navigate=useNavigate()
+    const windowSize = useWindowSize()
+    const windowHeight = Math.floor((windowSize.height / 100) * 2 - 4)
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+    const [newItem, setNewItem] = useState('')
     const [sidebarHistory, setSidebarHistory] = useState<string[]>(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'])
-    const [newSearch, setNewSearch] = useState(false)
-
+    const [visibleHistory, setVisibleHistory] = useState<string[]>([])
+    const [maxNumbersOfElements, setMaxNumberOfElements] = useState<number>(0)
+    
     useEffect(() => {
-        if (latestSearch) {
-            setNewSearch(true)
-            setSidebarHistory(verifyLength(sidebarHistory))
+        
+        if (latestSearch && latestSearch !== newItem) { 
+            setNewItem(latestSearch)
             setSidebarHistory(prevHistory => [latestSearch, ...prevHistory])
             setTimeout(() => {}, 1500)
         }
-    }, [latestSearch])
+        
+    }, [latestSearch, newItem])
 
-    const verifyLength = (list: string[]) => {
-        if (list.length === 20)
-            return removeItem(list, 19, 1)
-        return list
-    }
+    useEffect(() => {
+        const maxElements = Math.min(windowHeight, sidebarHistory.length)
+        setMaxNumberOfElements(maxElements)
 
-    const removeItem = (list: string[], from: number, to: number)  => {
-        const updateList = [...list]
-        updateList.splice(from, to)
-        return updateList
+        setVisibleHistory(sidebarHistory.slice(0, maxElements))
+    },[windowHeight, sidebarHistory])
+
+    const handleDeleteItem = (id: number) => {
+
     }
     
     return (
-        <aside className="w-full">
+        <aside className={`w-full transition-all duration-300`}>
             <div className="px-4 flex ">
                 {/*Sidebar content */}
                 {isVisible &&
@@ -90,8 +98,8 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
                         <button
                             onClick={() => onClose(false)}
                             className={`
-                                flex justify-end text-end mt-3 text-gray-800 
-                                text-lg lg:text-xl p-1 rounded-md hover:bg-gray-200
+                                flex justify-end text-end mt-2 text-gray-800 
+                                text-lg lg:text-xl px-1 pb-0 pt-2 rounded-md hover:bg-gray-200
                                 hover:dark:bg-gray-100 hover:dark:text-black 
                                 dark:text-white
                             `}
@@ -103,29 +111,39 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
 
                         <ul className="text-xl w-full">
                             {/* Show both the icons and the text of each elem. from sidebarElements */}
-                            {sidebarHistory.map((elem, id) => {
-                                return (
+                            {visibleHistory.map((elem, id) => {
+                               return (
                                     <div 
                                         key={id + elem}
                                         className={`
-                                            p-2 font-semibold text-md cursor-pointer hover:bg-gray-200 
-                                            hover:rounded-md dark:hover:bg-gray-600 dark:text-white`
+                                            flex justify-between p-2 font-semibold text-md `
                                         }
                                     >
-                                        <h1>
+                                        <h1 className="cursor-pointer pl-2 py-1 hover:bg-gray-200 w-full hover:rounded-md dark:hover:bg-gray-600 dark:text-white">
                                             {
-                                                id === 0 && newSearch?
+                                                id === 0 ?
                                                 <Typewriter text={elem} delay={100} />
                                                 :
                                                 <span className="animate-fadeIn">{elem}</span>
                                             }
                                         </h1>
+
+                                        <button 
+                                            onClick={() => setIsDeleteOpen(true)}
+                                            className={`
+                                                flex mt-1 ml-4 pt-1.5 mr-1 px-2 justify-end rounded-xl hover:bg-gray-300
+                                                text-gray-800 hover:text-red-500 hover:dark:text-red-600 
+                                                hover:dark:bg-slate-700 dark:text-white`
+                                            }
+                                        >
+                                            <MdDelete />
+                                        </button>
                                     </div>
                                 )
                             })}
                         </ul>
                         {
-                            sidebarHistory.length === 20 &&
+                            visibleHistory.length === windowHeight  &&
                             <div className="flex my-3 ">
                                 <hr className="flex w-1/4 mr-1 mt-2.5 border-gray-400" />
                                 <button 
@@ -140,8 +158,17 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
                     </div>
                     
                     }
-                
-                
+
+                    {
+                        isDeleteOpen &&
+                        <DeleteDialog 
+                            text={"Are you sure you want to delte this item from history ?"}
+                            
+                            isOpen={isDeleteOpen}
+                            onClose={() => setIsDeleteOpen(false)}
+
+                        />
+                    }
                 
             </div>
         </aside>

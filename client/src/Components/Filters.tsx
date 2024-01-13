@@ -21,9 +21,9 @@ export const Filters: React.FC<Props> = ({open, onClose}) => {
             <div
                 onClick={(e) => e.stopPropagation()} 
                 className={`
-                    w-1/2 ml-40 bg-white rounded-xl shawod-md p-6 transition-all 
+                    w-2/5  bg-white rounded-xl shawod-md 
                     ${open? "scale-100 opacity-100" : "scale-125 opacity-0"} 
-                    dark:bg-slate-800 dark:text-white`
+                    p-6 transition-all dark:bg-slate-800 dark:text-white`
                 }>
                 
                 <button
@@ -39,14 +39,15 @@ export const Filters: React.FC<Props> = ({open, onClose}) => {
 
                 <div className="flex items-center justify-center">
                     <div className="w-full p-8 text-white">
-                        <h1 className="text-2xl font-bold mb-4"></h1>
+                        <h1 className="text-2xl font-bold mb-4 text-center">
+                            Filter years
+                        </h1>
 
                         <YearSlider
                             min={1900}
                             max={currentYear}
                             name='SB-1'
                             forid='display1'
-                            
                         />
                     </div>
                 </div>
