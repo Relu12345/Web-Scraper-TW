@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState} from "react"
 import { useNavigate } from "react-router"
 import Typewriter from '../utils/Typewriter'
 import { useWindowSize } from "../utils/useWindowSize"
@@ -8,11 +8,17 @@ import { DeleteDialog } from "./DeleteDialog"
 import {textFormat} from '../utils/textFormat'
 import {getHistory} from '../API/getHistory'
 import { getUserInfoFromToken } from "../API/verifyToken"
+import { searchText } from "../API/searchText"
 import { 
     BsFillHouseDoorFill, 
     BsClockFill,
     BsFillMoonStarsFill 
 } from "react-icons/bs"
+
+interface historyObj {
+    date: Date,
+    query: string
+}
 
 
 interface sidebarElem {
@@ -60,17 +66,26 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
     const navigate=useNavigate()
     const user = getUserInfoFromToken()?.sub 
     const windowSize = useWindowSize()
-    const windowHeight = Math.floor((windowSize.height / 100) * 2 - 3)
+    const windowHeight = Math.floor((windowSize.height / 100) * 2 - 4)
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-    const [newItem, setNewItem] = useState('')
+    const [previousItem, setPreviousItem] = useState('')
     const [sidebarHistory, setSidebarHistory] = useState<string[]>([])
     const [visibleHistory, setVisibleHistory] = useState<string[]>([])
-    
+    const [firstHistoryFetch, setFirstHistoryFetch] = useState(true)
+    const [fullObject, setFullObject] = useState<historyObj | null>(null)
+    const [fullSearchObjects, setFullSearchObjects] = useState<historyObj[]>([])
+
     useEffect(() => {
-        fetchHistory()
-        
+        if (firstHistoryFetch) {
+            fetchHistory()
+            setFirstHistoryFetch(false)
+        }
+        if (latestSearch && latestSearch != previousItem) {
+            fetchHistory()
+            setPreviousItem(latestSearch)
+        }
         setTimeout(() => {}, 1500)
-    }, [sidebarHistory])
+    }, [sidebarHistory, latestSearch])
 
     useEffect(() => {
         const maxElements = Math.min(windowHeight, sidebarHistory.length)
@@ -83,16 +98,24 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
 
         if (result) {
             const data = JSON.parse(await result.text())
-            let historyData: string[] = []
-            for (let elem of data.history)
-                historyData.unshift(elem.query)
             
+            let historyData: string[] = []
+            setFullSearchObjects(data.history.reverse())
+           // console.log(data.history)
+            for (let elem of data.history) {
+                historyData.push(textFormat(elem.query))
+            }
+            //console.log(historyData)
             setSidebarHistory(historyData)
         }
     }
 
-    const handleDeleteItem = (id: number) => {
+    const handleDeleteItem = (item: historyObj) => {
         
+    }
+
+    const handleSearch = async (text: string) => {
+
     }
     
     return (
@@ -140,7 +163,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
                                         </h1>
 
                                         <button 
-                                            onClick={() => setIsDeleteOpen(true)}
+                                            onClick={() => {setIsDeleteOpen(true); setFullObject(fullSearchObjects[id])}}
                                             className={`
                                                 flex mt-1 ml-4 pt-1.5 mr-1 px-2 justify-end rounded-xl hover:bg-gray-300
                                                 text-gray-800 hover:text-red-500 hover:dark:text-red-600 
@@ -167,17 +190,16 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
                             </div>
                         }
                     </div>
-                    
                     }
 
                     {
                         isDeleteOpen &&
                         <DeleteDialog 
                             text={"Are you sure you want to delte this item from history ?"}
-                            
                             isOpen={isDeleteOpen}
                             onClose={() => setIsDeleteOpen(false)}
-
+                            item={fullObject}
+                            username={user?.username}
                         />
                     }
                 

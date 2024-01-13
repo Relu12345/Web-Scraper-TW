@@ -58,12 +58,12 @@ export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSideb
     return (
         <div 
             
-            className='w-full'
+            className='w-full h-full'
         >
             <Navbar {...callbackFunctions} />
             <div 
                 onClick={() => setIsToggleProfile(false)}
-                className='flex dark:bg-slate-800 slow-change'
+                className='h-full bg-gray-50 dark:bg-slate-800'
             >                
                 <div className={`
                         ${isToggleStateSidebar ? 
@@ -77,7 +77,7 @@ export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSideb
                         onClose={closeSidebar}
                     />
                 </div>
-                <div className='flex-1 dark:bg-slate-800'>
+                <div className=' mx-6 bg-gray-50 dark:bg-slate-800'>
                     {
                         loading ?
                         <LoadingScreen /> :
