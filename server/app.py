@@ -49,6 +49,7 @@ session = requests.Session()
 db = mongo['proiect']
 users = db['register']
 history = db['history']
+favourites = db['favourites']
 
 @app.route("/users/register",methods=['POST'])
 def register():
@@ -336,7 +337,7 @@ def insert_history(query, user):
 
 def delete_history(query, user):
     print("in delete history")
-    if user == '':
+    if (user == ''):
         return None
 
     user_history = history.find_one({'user': user})
@@ -363,17 +364,88 @@ def delete_history(query, user):
         print("User not found in history")    
         
 
-@app.route('/get_history/<string:user>', methods=['GET'])
+@app.route('/get_history/<user>', methods=['POST'])
 def get_history(user):
-    if user == '':
-        return jsonify({'error': 'Invalid user'})
+    try:
+        if(user == ''):
+            return jsonify({'error': 'Invalid user'})
 
-    user_history = history.find_one({'user': user})
-    if user_history:
-        return jsonify({'history': user_history['history']})
-    else:
-        return jsonify({'error': 'User not found'})
+        user_history = history.find_one({'user': user})
+        if user_history:
+            return jsonify({'history': user_history['history']})
+        else:
+            return jsonify({'error': 'User not found'})
+    except Exception as e:
+        print('Error', str(e))
+        return jsonify({'message': 'Error processing the request'}), 500
+
+@app.route('/insert_favourite', methods=['POST'])
+def insert_favourite():
+    try:    
+        data = request.get_json()
+        user = data.get('user')
+        url = data.get('url')
+        source = data.get('source')
+        name = data.get('name')
+        description = data.get('description')
+        
+        if(user == ''):
+            return jsonify({'error': 'Invalid user'})
+
+        if(favourites.find_one({'user': user})):
+            favourite_item = {
+                'url': url,
+                'source': source,
+                'name': name,
+                'description': description
+            }
+            favourites_list = favourites.find_one({'user': user})['favourites']
+            favourites_list.append({favourite_item})
+            favourites.update_one({'user': user}, {'$set':{'favourites': favourites_list}})
+        else:
+            favourites_item = {
+                'user': user,
+                'favourite': [{
+                    'url': url,
+                    'source': source,
+                    'name': name,
+                    'description': description
+                    }],
+            }
+            favourites.insert_one(favourites_item)
+        return jsonify({'message': 'Favorite added successfully'})
+    except Exception as e:
+        print('Error:', str(e))
+        return jsonify({'message': 'Error processing the request'}), 500
+
+@app.route('/delete_favourite', methods=['POST'])
+def delete_favourite():
+    try:
+        data = request.get_json()
+        user = data.get('user')
+        url = data.get('url')
+        if(user == ''):
+            return jsonify({'error': 'Invalid user'})
+        favourites.update_one({'user': user}, {'$pull': {'favourites': {'url': url}}})
+        return jsonify({'message':'Favourite deleted successfully'})
+        
+    except Exception as e:
+        print('Error', str(e))
+        return jsonify({'message': 'Error processing the request'}), 500
+
+@app.route('/get_favourites/<user>', methods=['POST'])
+def get_favourites(user):
+    try:
+        if(user == ''):
+            return jsonify({'error': 'Invalid user'})
+        user_favourites = favourites.find_one({'user': user})
+        if user_favourites:
+            return jsonify({'favourites': user_favourites['favourites']})
+    except Exception as e:
+        print('Error', str(e))
+        return jsonify({'message': 'Error processing the request'}), 500
     
+
 @app.route('/api/text-api', methods=['POST'])
 def receive_data():
     try:
