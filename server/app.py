@@ -51,6 +51,7 @@ users = db['register']
 history = db['history']
 favourites = db['favourites']
 
+
 @app.route("/users/register",methods=['POST'])
 def register():
     user_name = request.get_json()['username']
@@ -85,6 +86,7 @@ def register():
 
     return jsonify({'result':result, 'token': access_token}), 200
 
+
 @app.route("/users/register",methods=['GET'])
 def get_users():
 	result = []
@@ -93,8 +95,6 @@ def get_users():
 		result.append({'_id':str(field['_id']), 'username':str(field['username']),'email':str(field['email']),'password':str(field['password'])})
 
 	return jsonify(result)
-
-
 
 
 @app.route("/users/login",methods=['POST'])
@@ -130,18 +130,6 @@ def logout():
     access_token = create_access_token(identity=jti, expires_delta=False)
     return jsonify(logout=True, access_token=access_token)
 
-
-@app.route('/')
-def index():
-    print(f'[INDEX] We here!')
-    return render_template('index.html')
-
-@app.route('/search', methods=['POST'])
-def search():
-    print(f'[SEARCH] We here!')
-    query = request.form.get('query')
-    results = scrape_google_scholar(query, '')
-    return render_template('search.html', results=results)
 
 def scrape_google_scholar(query, user):
     
@@ -195,6 +183,7 @@ def scrape_google_scholar(query, user):
             
     return results
 
+
 def scrape_ieee_xplore(query, user):
     print('[SCRAPE IEEE XPLORE] We here')
     results = []
@@ -224,7 +213,7 @@ def scrape_ieee_xplore(query, user):
         search_button.click()
 
         page = 1
-        while True:
+        while page < 3:
             # Wait for the results to load
             WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'xpl-results-list .List-results-items'))
@@ -275,6 +264,7 @@ def scrape_ieee_xplore(query, user):
 
     return results
 
+
 class CustomThread(Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs={}, Verbose=None):
         Thread.__init__(self, group, target, name, args, kwargs)
@@ -316,7 +306,6 @@ def scrape_both_sources(query, user):
     return results
 
 
-
 def insert_history(query, user):
     print("in insert history")
     search_data = datetime.utcnow()
@@ -334,6 +323,7 @@ def insert_history(query, user):
         print("history item", history_item)
         history.insert_one(history_item)
         print("after insert")
+
 
 def delete_history(query, user):
     print("in delete history")
@@ -364,11 +354,7 @@ def delete_history(query, user):
         print("User not found in history")    
         
 
-<<<<<<< Updated upstream
-@app.route('/get_history/<user>', methods=['POST'])
-=======
 @app.route('/api/get_history/<string:user>', methods=['POST'])
->>>>>>> Stashed changes
 def get_history(user):
     try:
         if(user == ''):
@@ -382,6 +368,7 @@ def get_history(user):
     except Exception as e:
         print('Error', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
+    
 
 @app.route('/insert_favourite', methods=['POST'])
 def insert_favourite():
@@ -421,6 +408,7 @@ def insert_favourite():
     except Exception as e:
         print('Error:', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
+    
 
 @app.route('/delete_favourite', methods=['POST'])
 def delete_favourite():
@@ -436,6 +424,7 @@ def delete_favourite():
     except Exception as e:
         print('Error', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
+    
 
 @app.route('/get_favourites/<user>', methods=['POST'])
 def get_favourites(user):

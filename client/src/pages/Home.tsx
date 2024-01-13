@@ -45,7 +45,7 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
 
     if (searchInput.length > 0) {
       setLoading(true)
-      //searchElement(inputToSend.current?.value || '')
+      searchElement(inputToSend.current?.value || '')
       console.log('Sending data ', searchInput)
       searchElement(searchInput)
       const result = await searchText(searchInput)
