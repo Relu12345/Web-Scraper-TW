@@ -335,6 +335,33 @@ def insert_history(query, user):
         history.insert_one(history_item)
         print("after insert")
 
+def delete_history(query, user):
+    print("in delete history")
+    if user == '':
+        return None
+
+    user_history = history.find_one({'user': user})
+    if user_history:
+        history_list = user_history['history']
+
+        # Find the index of the item to be deleted
+        index_to_delete = None
+        for i, entry in enumerate(history_list):
+            if entry['query'] == query:
+                index_to_delete = i
+                break
+
+        if index_to_delete is not None:
+            # Remove the item from the history list
+            del history_list[index_to_delete]
+
+            # Update the user's history in the database
+            history.update_one({'user': user}, {'$set': {'history': history_list}})
+            print("Item deleted from history")
+        else:
+            print("Item not found in history")
+    else:
+        print("User not found in history")    
 
 @app.route('/api/text-api', methods=['POST'])
 def receive_data():
