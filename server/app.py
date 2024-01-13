@@ -364,7 +364,7 @@ def delete_history(query, user):
         print("User not found in history")    
         
 
-@app.route('/get_history/<string:user>', methods=['GET'])
+@app.route('/get_history/<user>', methods=['POST'])
 def get_history(user):
     try:
         if(user == ''):
@@ -433,7 +433,7 @@ def delete_favourite():
         print('Error', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
 
-@app.route('/get_favourites/<string:user>', methods=['GET'])
+@app.route('/get_favourites/<user>', methods=['POST'])
 def get_favourites(user):
     try:
         if(user == ''):
