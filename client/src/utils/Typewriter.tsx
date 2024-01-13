@@ -16,27 +16,8 @@ interface Props {
 const Typewriter: React.FC<Props> = ({text, delay}) => {
     const [visibleText, setVisibleText] = useState('')
     const [currentIndex, setCurrentIndex] = useState(0)
-
-    const checkTextLength = (text: string) => {
-        if (text.length > 15) {
-            return text.slice(0,10).concat("...")
-        }
-        return text
-    }
-
-    const handleTextFormat = (text: string) => {
-        const texts = text.split(' ')
-        let textFormat = ''
-        for (let substring of texts) {
-            textFormat += substring.charAt(0).toUpperCase() + 
-                substring.slice(1, substring.length - 1).toLowerCase() + ' '
-        }
-
-        return checkTextLength(textFormat)
-    }
     
     useEffect(() => {
-        text = handleTextFormat(text)
         const addNextCharacter = () => {
             setVisibleText((prevText) => prevText + text[currentIndex])
             setCurrentIndex((prevIndex) => prevIndex + 1)

@@ -103,7 +103,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
         <>
             {searchedData.length === 0 ? ''
                 : (
-                    <div className="w-11/12 mx-auto mt-4 p-6 bg-white rounded-lg shadow-md dark:bg-slate-700 slow-change">
+                    <div className="w-fit xl:w-11/12 mx-4 xl:mx-auto mt-4 p-6 bg-white rounded-lg shadow-md dark:bg-slate-700 slow-change">
             <div className="overflow-x-auto">
                 <>
                     <div className="flex mb-8 justify-between">
