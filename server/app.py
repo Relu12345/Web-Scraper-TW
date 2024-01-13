@@ -364,7 +364,11 @@ def delete_history(query, user):
         print("User not found in history")    
         
 
+<<<<<<< Updated upstream
 @app.route('/get_history/<user>', methods=['POST'])
+=======
+@app.route('/api/get_history/<string:user>', methods=['POST'])
+>>>>>>> Stashed changes
 def get_history(user):
     try:
         if(user == ''):

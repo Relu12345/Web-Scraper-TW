@@ -41,20 +41,21 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
     }
   }
 
-  const handleSendData =  () => {
+  const handleSendData = async () => {
 
     if (searchInput.length > 0) {
-      //setLoading(true)
-      searchElement(inputToSend.current?.value || '')
-      //console.log('Sending data ', searchInput)
-      /*const result = await searchText(searchInput)
+      setLoading(true)
+      //searchElement(inputToSend.current?.value || '')
+      console.log('Sending data ', searchInput)
+      searchElement(searchInput)
+      const result = await searchText(searchInput)
 
       if (result) {
         const data: ResponseMessage = await result.json()
         setSearchData(data.text)
         setLoading(false)
       }
-      */
+      
     }
   }
 
@@ -65,7 +66,7 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
       <div
         onClick={() => setDisplayFilters(false)} 
         className='block h-screen'>
-            <div className='flex text-xl pt-2 font-bold dark:text-white'>
+            <div className='flex text-xl pt-24 font-bold dark:text-white'>
               <FaHouseChimney className='mt-1'/>
               <h1 className='mx-2'>Home</h1>
             </div>

@@ -5,6 +5,9 @@ import { useWindowSize } from "../utils/useWindowSize"
 import { IoMdClose } from "react-icons/io"
 import { MdDelete } from "react-icons/md"
 import { DeleteDialog } from "./DeleteDialog"
+import {textFormat} from '../utils/textFormat'
+import {getHistory} from '../API/getHistory'
+import { getUserInfoFromToken } from "../API/verifyToken"
 import { 
     BsFillHouseDoorFill, 
     BsClockFill,
@@ -55,33 +58,41 @@ const sidebarElements = [
 
 const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => {
     const navigate=useNavigate()
+    const user = getUserInfoFromToken()?.sub 
     const windowSize = useWindowSize()
-    const windowHeight = Math.floor((windowSize.height / 100) * 2 - 4)
+    const windowHeight = Math.floor((windowSize.height / 100) * 2 - 3)
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const [newItem, setNewItem] = useState('')
-    const [sidebarHistory, setSidebarHistory] = useState<string[]>(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'])
+    const [sidebarHistory, setSidebarHistory] = useState<string[]>([])
     const [visibleHistory, setVisibleHistory] = useState<string[]>([])
-    const [maxNumbersOfElements, setMaxNumberOfElements] = useState<number>(0)
     
     useEffect(() => {
+        fetchHistory()
         
-        if (latestSearch && latestSearch !== newItem) { 
-            setNewItem(latestSearch)
-            setSidebarHistory(prevHistory => [latestSearch, ...prevHistory])
-            setTimeout(() => {}, 1500)
-        }
-        
-    }, [latestSearch, newItem])
+        setTimeout(() => {}, 1500)
+    }, [sidebarHistory])
 
     useEffect(() => {
         const maxElements = Math.min(windowHeight, sidebarHistory.length)
-        setMaxNumberOfElements(maxElements)
-
         setVisibleHistory(sidebarHistory.slice(0, maxElements))
+
     },[windowHeight, sidebarHistory])
 
-    const handleDeleteItem = (id: number) => {
+    const fetchHistory = async () => {
+        const result = await getHistory(user?.username)
 
+        if (result) {
+            const data = JSON.parse(await result.text())
+            let historyData: string[] = []
+            for (let elem of data.history)
+                historyData.unshift(elem.query)
+            
+            setSidebarHistory(historyData)
+        }
+    }
+
+    const handleDeleteItem = (id: number) => {
+        
     }
     
     return (
