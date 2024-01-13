@@ -26,11 +26,20 @@ export const RegisterForm: React.FC<Props> = ({handleAuth}) => {
         try {
             const response = await registerUser(username, email, password)
 
+            if (response?.status === 401) {
+                setError("Username already exists on a user")
+                return
+            }
+
+            if (response?.status === 400) {
+                setError(("Email already exists on a user"))
+                return
+            }
+
             if (response && response.ok) {
                 const data = JSON.parse(await response.text())
-                console.log(data)
-                setTokenInCookies(data.token)
-                handleAuth(true)
+                    setTokenInCookies(data.token)
+                    handleAuth(true)
             }
             else {
                 setError("User registration failed")

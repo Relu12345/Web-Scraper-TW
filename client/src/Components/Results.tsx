@@ -1,7 +1,11 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect} from 'react'
 import { ExportItems } from './ExportItems'
 import {BiSolidRightArrow, BiSolidLeftArrow} from 'react-icons/bi'
+import { MdOutlineStar } from "react-icons/md"
+import { CiStar } from "react-icons/ci"
 import Select from 'react-select'
+
+import {getFavoritesItems, addItemToFavorites, removeItemFromFavorites} from '../API/manageFavorites'
 
 interface SearchedData {
     searchedData: ResponseMessageText[]
@@ -22,8 +26,19 @@ const displayItems = [
 
 const Results: React.FC<SearchedData> = ({searchedData}) => {
     const [selectedItems, setSelectedItems] = useState<Array<number>>([])
+    const [favoritesItems, setFavoritesItems] = useState<ResponseMessageText[]>([])
 
     useEffect(() => {
+        const checkForFavoriteItems = async () => {
+            /*const favoritesList: ResponseMessageText[] = await getFavoritesItems()
+
+            for (let elem of searchedData) {
+                if (favoritesList.includes(elem))
+                    favoritesItems.push(elem)
+            }
+            */
+        }
+        checkForFavoriteItems()
         setSelectedItems([])
     }, [searchedData])
     /*Table pagination */
@@ -41,6 +56,18 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
             setSelectedItems(selectedItems.filter((item) => item !== id))
         else
             setSelectedItems([...selectedItems, id])
+    }
+
+    const handleFavoritesItem = async (id: number) => {
+        const currentItem = searchedData[id]
+        if (favoritesItems.includes(currentItem)) {
+            await addItemToFavorites(currentItem)
+            setFavoritesItems(favoritesItems.filter((item) => item !== currentItem))
+        }
+        else {
+            await removeItemFromFavorites(currentItem)
+            setFavoritesItems([...favoritesItems, currentItem])
+        }
     }
 
     const nextPage = () => {
@@ -61,6 +88,17 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
         setError(value)
     }
 
+    const customStyles = {
+        control: (provided: any, state: any) => ({
+          ...provided,
+          paddingTop: 0,
+          paddingBottom: 0, // Set the top margin to 0
+        }),
+    }
+
+
+        //console.log(favoritesItems)
+
     return (
         <>
             {searchedData.length === 0 ? ''
@@ -70,11 +108,11 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                 <>
                     <div className="flex mb-8 justify-between">
                         <div>
-                            <button className='bg-gray-600 text-white font-medium p-2 my-4 lg:my-0 mx-2 rounded-md'>
+                            <button className='bg-gray-600 text-white font-medium p-2 my-4 lg:my-0 mx-2 rounded-md dark:bg-gray-800 hover:dark:bg-slate-900 slow-change'>
                                 <ExportItems itemsValue={selectedItems} items={searchedData} type={'pdf'} handleError={handleErrorAtExport}/>
                             </button>
 
-                            <button className='bg-gray-600 text-white font-medium p-2 mx-2 rounded-md'>
+                            <button className='bg-gray-600 text-white font-medium p-2 my-4 lg:my-0 mx-2 rounded-md dark:bg-gray-800 hover:dark:bg-slate-900 slow-change'>
                                 <ExportItems itemsValue={selectedItems} items={searchedData} type={'csv'} handleError={handleErrorAtExport}/>
                             </button>
 
@@ -90,7 +128,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                             <Select
                                 options={displayItems}
                                 placeholder={itemsPerPage}
-                                className='dark:bg-gray-600'
+                                styles={customStyles}
                                 onChange={(e:any) => setItemsPerPage(e.value)}
                             />
                             <span className="mt-2 ml-1 dark:text-white">
@@ -111,7 +149,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                     Select all 
                                     <input 
                                         type="checkbox"
-                                        className="mx-2"
+                                        className="w-4 h-4 my-4"
                                         checked={searchedData.length === selectedItems.length? true: false}
                                         onChange={() => {
                                             setSelectedItems(selectedItems.length !== searchedData.length ? 
@@ -137,7 +175,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
 
                             <th className='p-2'>
                                 <div className='flex gap-2 justify-center'>
-                                    <h1>Find paper at</h1>
+                                    <h1>Add to Favorites</h1>
                                 </div>
                             </th>
                         </tr>
@@ -148,21 +186,31 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                 <td className='p-2 font-semibold'>
                                     <input 
                                         type="checkbox"
-                                        className='mx-8'
+                                        className='mx-9 w-4 h-4'
                                         checked={selectedItems.includes(searchedData.indexOf(data))}
                                         onChange={() => handleSelectedItem(searchedData.indexOf(data))} 
                                     />
                                 </td>
-                                <td className='font-medium font-serif dark:text-white'>
-                                    {data.title}
+                                <td className='p-4  hover:text-blue-600 font-medium dark:text-blue-300'>
+                                    <a href={data.url} target='_blank' rel="noreferrer">{data.title}</a>
                                 </td>
                                 <td className='p-2 dark:text-white'>
                                     {data.authors.map((author: string) => (
                                         <div key={author + data.url}>{author} <br /></div>
                                     ))}
                                 </td>
-                                <td className='p-10 text-blue-600 font-medium dark:text-blue-300'>
-                                    <a href={data.url} target='_blank'>URL</a>
+                                <td className='p-2 '>
+                                    {favoritesItems.includes(data)?
+                                        <MdOutlineStar 
+                                        onClick={() => handleFavoritesItem(searchedData.indexOf(data))}
+                                        className='mx-auto  text-2xl mt-1 text-yellow-600 cursor-pointer'
+                                    />
+                                        :
+                                        <CiStar 
+                                        onClick={() => handleFavoritesItem(searchedData.indexOf(data))}
+                                        className='mx-auto  text-2xl mt-1 text-dark dark:text-white cursor-pointer'
+                                    />
+                                    }
                                 </td>
                             </tr>
                         ))}

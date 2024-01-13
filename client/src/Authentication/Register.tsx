@@ -33,7 +33,7 @@ const handlePageDisplay = (value: boolean) => {
                 />
 
                 <div className='w-full xl:w-3/4 rounded-md m-14 dark:text-white'>
-                    <h1 className='text-center font-medium font-sans text-xl mb-4'>Log In</h1>
+                    <h1 className='text-center font-medium font-sans text-xl mb-4'>Register</h1>
                     <RegisterForm handleAuth={handlePageDisplay}/>   
                 </div>
             </div>

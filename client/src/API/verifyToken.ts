@@ -33,4 +33,4 @@ const isUserAuth = () => {
 
 
 
-export {setTokenInCookies, getUserInfoFromToken, removeTokenFromCookies, isUserAuth} 
+export {setTokenInCookies, getUserInfoFromToken, removeTokenFromCookies, isUserAuth, getTokenFromCookies} 

@@ -1,7 +1,23 @@
-import React, {useState} from 'react'
-import Navbar from '../Components/Navbar'
-import Sidebar from '../Components/Sidebar'
+import React, {useState, useEffect, useRef} from 'react'
 import Results from '../Components/Results'
+import { FaHouseChimney, FaMagnifyingGlass } from "react-icons/fa6"
+import { IoSettings } from "react-icons/io5"
+import Logo from '../Images/logo_transparent-1.svg'
+import WhiteLogo from '../Images/white-logo.png'
+import LoadingScreen from '../utils/LoadingScreen'
+import { searchText } from '../API/searchText'
+import { VscSettings } from "react-icons/vsc"
+import { Filters } from '../Components/Filters'
+
+interface Props {
+  searchElement: (element: string) => void
+  sidebarState : boolean
+}
+
+interface ResponseMessage {
+  message: string
+  text: ResponseMessageText[]
+}
 
 interface ResponseMessageText {
   authors: Array<string>,
@@ -9,44 +25,111 @@ interface ResponseMessageText {
   url: string
 }
 
-interface Props {
-  handleTheme: () => void
-}
 
-export const Home: React.FC<Props> = ({handleTheme}) => {
 
-    //sidebar toggle functionality
-    const [isToggleStateSidebar, setToggleStateSidebar] = useState<boolean>(true)
-    //gettin the search result from the navbar
-    const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
-  
-    const toggleStateSidebar = () => {
-      setToggleStateSidebar(!isToggleStateSidebar)
+export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
+  const [searchInput, setSearchInput] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [displayFilters, setDisplayFilters] = useState(false)
+  const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
+  const inputToSend = useRef<HTMLInputElement | null>(null)
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+     //console.log('Enter key pressed')
+      handleSendData()
     }
-  
-    const updateSearchData = (newData: ResponseMessageText[]): void => {
-      setSearchData(newData)
+  }
+
+  const handleSendData =  () => {
+
+    if (searchInput.length > 0) {
+      //setLoading(true)
+      searchElement(inputToSend.current?.value || '')
+      //console.log('Sending data ', searchInput)
+      /*const result = await searchText(searchInput)
+
+      if (result) {
+        const data: ResponseMessage = await result.json()
+        setSearchData(data.text)
+        setLoading(false)
+      }
+      */
     }
-  
-    const callbackFunctions = {
-      toggleSidebar: toggleStateSidebar,
-      onUpdateData: updateSearchData,
-      handleTheme: handleTheme
-    }
+  }
 
     return (
-      <>
-        {/* Pass the function to the navbar component in order to change the state of the sidebar*/}
-        
-        <Navbar {...callbackFunctions}/>
-        <div className='flex dark:bg-gray-800'>
-          <div className={`${isToggleStateSidebar? ' w-min md:w-2/6 md:w-60' : 'w-min'} h-screen relative bg-white shadow-md `}>
-          <Sidebar isVisible={isToggleStateSidebar} />
-          </div>
-          <div className='flex-1 ml-8'>
-          <Results searchedData={searchData} />
-          </div>
+       loading ? 
+        <LoadingScreen />
+      :
+      <div
+        onClick={() => setDisplayFilters(false)} 
+        className='block h-screen  mt-4'>
+            <div className='flex text-xl font-bold dark:text-white'>
+              <FaHouseChimney className='mt-1'/>
+              <h1 className='mx-2'>Home</h1>
+            </div>
+
+            
+            {searchData.length === 0 &&
+              <div>
+                {
+                  localStorage.theme === 'dark' ?
+                  <img src={WhiteLogo} className='flex w-1/3 2xl:w-1/4 items-center justify-center mx-auto' alt="White logo" /> :
+                  <img src={Logo} className='flex w-1/3 2xl:w-1/4 items-center justify-center mx-auto' alt="Logo" /> 
+                }
+                
+                <h1 className='w-1/2 text-sm lg:text-lg mx-auto text-center font-semibold dark:text-white'>Revolutionize Your Research Journey: FetchFlow - Empowering Minds, Unveiling Potential</h1>
+              </div> 
+            }
+
+            {/* Search bar */}
+            <div className='fiexed mx-auto items-center justify-center text-center mt-6 max-w-screen-xl'>
+              <div className='relative'>
+                <input 
+                  type="text"
+                  id="text"
+                  placeholder='Search for your favorite scientific paper...'
+                  autoComplete='off'
+                  value={searchInput}
+                  onKeyDown={handleKeyDown}
+                  ref={inputToSend}
+                  onChange={(event) => {setSearchInput(event.target.value)}}
+                  className={`
+                    ${sidebarState ? 'w-3/4 lg:w-1/2 xl:w-7/12 2xl:w-10/12 ml-0 lg:ml-24 2xl:ml-0' : 'w-3/4 lg:w-10/12'}  border-2 border-gray-400 bg-white py-2.5 
+                    rounded-md px-2 focus:outline-none focus:border-black 
+                    dark:bg-slate-900 dark:border-gray-400 
+                    focus:dark:border-gray-200 dark:placeholder-gray-400 
+                    dark:text-white slow-change
+                  `}
+                />
+                <button 
+                  onClick={(e) =>{ e.stopPropagation(); setDisplayFilters(!displayFilters)}}
+                  data-testid="toggle-button"
+                  className='relative mx-2 text-xl text-white p-3.5 top-1 rounded-md bg-gray-600 dark:bg-slate-600 '>
+                  <VscSettings />
+                </button>
+
+                <button 
+                  onClick={handleSendData}
+                  className='w-1/12 h-full mr-4 py-4  bg-blue-600 dark:bg-blue-700 rounded-md'
+                >
+                <FaMagnifyingGlass className='flex mx-auto text-white ' />
+              </button>
+              </div>
+              
+            </div>
+
+            <Results searchedData={searchData} />
+
+            {
+              displayFilters &&
+                <Filters 
+                  open={displayFilters} 
+                  onClose={() => setDisplayFilters(false)}
+                />
+            }
+            
         </div>
-      </>
     )
 }

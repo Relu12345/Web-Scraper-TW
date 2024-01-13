@@ -1,17 +1,27 @@
 from datetime import datetime
 import os
+import re
+from threading import Thread
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, session, jsonify, send_file
 from bs4 import BeautifulSoup
 from flask_pymongo import PyMongo
+
 import pymongo
 import requests, time, random
+
 #from api.routes import api 
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from flask_bcrypt import Bcrypt
 from json_to_pdf import generate_pdf
 from json_to_csv import generate_csv
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.chrome.options import Options
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
@@ -40,7 +50,6 @@ db = mongo['proiect']
 users = db['register']
 history = db['history']
 
-
 @app.route("/users/register",methods=['POST'])
 def register():
     user_name = request.get_json()['username']
@@ -49,9 +58,13 @@ def register():
     created = datetime.utcnow()
 
     existing_user = users.find_one({'username': user_name})
+    existing_email = users.find_one({'email': email})
     
     if existing_user:
-        return jsonify({'error': 'Username already exists'})
+        return jsonify({'error': 'Username already exists'}), 401
+    
+    if existing_email:
+        return jsonify({'error': 'Email already exists'}), 400
 
     user_id = users.insert_one({
 		'username': user_name,
@@ -69,7 +82,7 @@ def register():
 
     result = {'email': new_user['email']+' registered'}
 
-    return jsonify({'result':result, 'token': access_token})
+    return jsonify({'result':result, 'token': access_token}), 200
 
 @app.route("/users/register",methods=['GET'])
 def get_users():
@@ -98,13 +111,13 @@ def login():
 				'email': response['email']
 				})
 
-			result = jsonify({"token": access_token})
+			result = jsonify({"token": access_token}), 200
 
 		else:
-			result = jsonify({"error": "Invalid Username or Password"})
+			result = jsonify({"error": "Invalid Username or Password"}), 400
 
 	else:
-		result = jsonify({"result": "No result found"})
+		result = jsonify({"result": "No result found"}), 400
 
 	return result
 
@@ -127,20 +140,21 @@ def index():
 def search():
     print(f'[SEARCH] We here!')
     query = request.form.get('query')
-    results = scrape_google_scholar(query)
+    results = scrape_google_scholar(query, '')
     return render_template('search.html', results=results)
 
-def scrape_google_scholar(query):
-    insert_history(query)
+def scrape_google_scholar(query, user):
     
     print(f'[SCRAPE] We here')
     results = []
+    page = 0
 
-    for i in range(3):
-        if i == 0:
-            url = f'https://scholar.google.com/scholar?q={query}'
-        else:
-            url = f'https://scholar.google.com/scholar?start={i*10}&q={query}'
+    #For all the pages
+    #while True:
+
+    #For "i" pages:
+    while page < 3:
+        url = f'https://scholar.google.com/scholar?start={page * 10}&q={query}'
         
         try:
             response = session.get(url, headers=headers, timeout=10)
@@ -151,12 +165,19 @@ def scrape_google_scholar(query):
 
         soup = BeautifulSoup(response.text, 'html.parser')
 
+        if not soup.select('.gs_ri'):
+            break
+
         for result in soup.select('.gs_ri'):
             title = result.select_one('.gs_rt').text
             authors = [i.text for i in result.select('.gs_a')]
             
             try:
                 urlPage = result.select_one('a')['href']
+
+                if 'ieeexplore.ieee.org' in urlPage:
+                    urlPage = re.sub(r'/abstract', '', urlPage)
+                
             except TypeError:
                 urlPage = None
             
@@ -164,42 +185,168 @@ def scrape_google_scholar(query):
                 'title': title, 
                 'authors': authors,
                 'url': urlPage,
+                'source': ['Google Scholar'],
             })
-            
-        print(f'[SCRAPE] Found {len(results)} results')
+
+        print(f'[SCRAPE] Found a total of {len(results)} results. Now on page {page + 1}')
 
         time.sleep(random.randrange(1, 3))
+        page += 1
             
-        print(results, "\n")
+    return results
+
+def scrape_ieee_xplore(query, user):
+    print('[SCRAPE IEEE XPLORE] We here')
+    results = []
+
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3')
+    chrome_options.add_argument('window-size=1920x1080')
+
+    driver = webdriver.Chrome(options=chrome_options)
+
+    search_url = "https://ieeexplore.ieee.org/"
+    driver.get(search_url)
+
+    try:
+        search_input = WebDriverWait(driver, 1).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'div.global-search-bar input.Typeahead-input'))
+        )
+
+        # Enter search query
+        search_input.send_keys(query)
+
+        # Find and click the search button
+        search_button = WebDriverWait(driver, 1).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.search-icon button.stats-Global_Search_Icon'))
+        )
+        search_button.click()
+
+        page = 1
+        while True:
+            # Wait for the results to load
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'xpl-results-list .List-results-items'))
+            )
+
+            # Your scraping logic here...
+            results_list = driver.find_element("css selector", "xpl-results-list")
+
+            for result_item in results_list.find_elements("css selector", ".List-results-items"):
+                title = result_item.find_element("css selector", "h3 a").text
+                authors = result_item.find_elements("css selector", ".author span")
+                authors_list = [author.text.strip(';').strip() for author in authors if author.text.strip() != '']
+                authors_set = set(authors_list)
+                authors_list = ', '.join(authors_set).lstrip(', ')
+
+                authors = []
+                authors.append(authors_list)
+
+                url = result_item.find_element("css selector", "h3 a").get_attribute("href")
+
+                # Create a dictionary for each result
+                results.append({
+                    "title": title,
+                    "authors": authors,
+                    "url": url,
+                    "source": ["IEEE Xplore"]
+                })
+
+            # Construct the URL for the next page
+            page += 1
+            next_page_url = f"https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText={query}&pageNumber={page}"
+
+            # Navigate to the next page
+            driver.get(next_page_url)
+
+            # Wait for the next page to load
+            time.sleep(5)
+
+            # Check if there are no more pages
+            no_results_message = driver.find_elements(By.CLASS_NAME, "List-results-none")
+            if no_results_message:
+                break
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+    driver.quit()
 
     return results
 
-@jwt_required()
-def insert_history(query):
+class CustomThread(Thread):
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs)
+        self._return = None
+    
+    def run(self):
+        if self._target is not None:
+            self._return = self._target(*self._args, **self._kwargs)
+            print(self._return)
+
+    def join(self):
+         Thread.join(self)
+         return self._return
+
+def scrape_both_sources(query, user):
+    google_thread = CustomThread(target=scrape_google_scholar, args=(query, user))
+    ieee_thread = CustomThread(target=scrape_ieee_xplore, args=(query, user))
+
+    google_thread.start()
+    ieee_thread.start()
+
+    results_google_scholar = google_thread.join()
+    results_ieee_xplore = ieee_thread.join()
+    insert_history(query, user)
+
+    url_to_result = {}
+    for result in results_google_scholar + results_ieee_xplore:
+        url = result['url']
+        if url not in url_to_result:
+            url_to_result[url] = result
+        else:
+            # Merge sources if duplicate URL
+            url_to_result[url]['source'].extend(result['source'])
+
+    # Deduplicate results
+    results = list(url_to_result.values())
+
+    print(f'[SCRAPE BOTH SOURCES] Results:\n{results}')
+    return results
+
+
+
+def insert_history(query, user):
     print("in insert history")
-    jti = get_jwt_identity()
-    print(jti)
     search_data = datetime.utcnow()
-    history_item = {
-        'user_id': 'tbd',
-        'history': query,
-        'date': search_data
-    }
-    print("history item", history_item)
-    history.insert_one(history_item)
-    print("after insert")
+    if(user == ''):
+         return None
+    if(history.find_one({'user': user})):
+        history_list = history.find_one({'user': user})['history']
+        history_list.append({'query': query, 'date': search_data})
+        history.update_one({'user': user}, {'$set': {'history': history_list}})
+    else:
+        history_item = {
+            'user': user,
+            'history': [{'query': query, 'date': search_data}],
+        }
+        print("history item", history_item)
+        history.insert_one(history_item)
+        print("after insert")
 
 
 @app.route('/api/text-api', methods=['POST'])
 def receive_data():
     try:
-       data = request.get_json()
-       text = data.get('text', '')
-       result = scrape_google_scholar(text)
-       return jsonify({'message' : 'Success', 'text' : result})
+        data = request.get_json()
+        text = data.get('text', '')
+        user = data.get('username', '')
+        result = scrape_both_sources(text, user)
+        return jsonify({'message': 'Success', 'text': result})
     except Exception as e:
         print('Error:', str(e))
-        return jsonify({'message' : 'Error processing the request'}), 500
+        return jsonify({'message': 'Error processing the request'}), 500
 
 @app.route('/api/exportData', methods=['POST'])
 def get_export():
@@ -228,6 +375,8 @@ def get_export():
     except Exception as e:
         print('Error:', str(e))
         return jsonify({'message' : 'Error processing the request'}), 500
+
+
 
 
 if __name__ == '__main__':

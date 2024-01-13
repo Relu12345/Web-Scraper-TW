@@ -20,15 +20,19 @@ const LoginForm : React.FC<Props> = ({handleAuth}) => {
 
         const response = await loginUser(email, password)
 
+        if (response?.status === 400) {
+            setError("Invalit credentials")
+            return 
+        }
+
         if (response && response.ok) {
             // parse the result from string to JSON
-            console.log(response)
             const data = JSON.parse(await response.text()) 
             if (data.result !== 'No result found') {
                 try {
                     setTokenInCookies(data.token)
-                    console.log(data)
-                    handleAuth(true)
+                    
+                   handleAuth(true)
                 } catch (error) {
                     setError("Failed to login to the server!")
                     console.error("Faild to send jwt token to the server", error)
