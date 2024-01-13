@@ -49,6 +49,7 @@ session = requests.Session()
 db = mongo['proiect']
 users = db['register']
 history = db['history']
+favourites = db['favourites']
 
 @app.route("/users/register",methods=['POST'])
 def register():
@@ -336,7 +337,7 @@ def insert_history(query, user):
 
 def delete_history(query, user):
     print("in delete history")
-    if user == '':
+    if (user == ''):
         return None
 
     user_history = history.find_one({'user': user})
@@ -373,7 +374,58 @@ def get_history(user):
         return jsonify({'history': user_history['history']})
     else:
         return jsonify({'error': 'User not found'})
+"""    
+def insert_favourite(items, user):
+    print("in insert favourite")
+    if(user == ''):
+        return None
+    if(favourites.find_one({'user': user})):
+        favourites_list = favourites.find_one({'user': user})[favourites]
+        favourites_list.append({items})
+        favourites.update_one({'user': user}, {'$set':{'favourites': favourites_list}})
+    else:
+        favourites_item = {
+            'user': user,
+            'favourite': [items],
+        }
+        favourites.insert_one(favourites_item)
+"""
+@app.route('/insert_favourite', methods=['POST'])
+def insert_favourite():
+    data = request.get_json()
+    user = data.get('user')
+    url = data.get('url')
+    source = data.get('source')
+    name = data.get('name')
+    description = data.get('description')
     
+    if(user == ''):
+        return jsonify({'error': 'Invalid user'})
+
+    if(favourites.find_one({'user': user})):
+        favourite_item = {
+            'url': url,
+            'source': source,
+            'name': name,
+            'description': description
+        }
+        favourites_list = favourites.find_one({'user': user})['favourites']
+        favourites_list.append({favourite_item})
+        favourites.update_one({'user': user}, {'$set':{'favourites': favourites_list}})
+    else:
+        favourites_item = {
+            'user': user,
+            'favourite': [{
+                'url': url,
+                'source': source,
+                'name': name,
+                'description': description
+                }],
+        }
+        favourites.insert_one(favourites_item)
+    return jsonify({'message': 'Favorite added successfully'})
+
+
 @app.route('/api/text-api', methods=['POST'])
 def receive_data():
     try:
