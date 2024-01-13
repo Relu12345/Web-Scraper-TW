@@ -324,7 +324,7 @@ def insert_history(query, user):
         history.insert_one(history_item)
         print("after insert")
 
-
+"""
 @app.route('/api/delete_history', methods=['POST'])
 def delete_history():
     try:
@@ -342,47 +342,44 @@ def delete_history():
     except Exception as e:
         print('Error', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
+"""
 
-
-""""@app.route('/api/delete_history', methods=['POST'])
+@app.route('/api/delete_history', methods=['POST'])
 def delete_history():
     try:
         data = request.get_json()
         user = data.get('user')
         query = data.get('query')
         date = data.get('date')
-        if (user == ''):
-            return jsonify({'message': 'Invalid user'})
+        
+        if not user:
+            return jsonify({'error': 'Missing user'}), 400
 
         user_history = history.find_one({'user': user})
-        if user_history:
-            history_list = user_history['history']
 
-            # Find the index of the item to be deleted
-            index_to_delete = None
-            for i, entry in enumerate(history_list):
-                if entry['date'] == date:
-                    index_to_delete = i
-                    break
+        if not user_history:
+            print("User not found")
+            return jsonify({'error': 'User not found'}), 404
 
-            if index_to_delete is not None:
-                # Remove the item from the history list
-                del history_list[index_to_delete]
+        date = str(date)[:-5]
+        date = str.replace(date, 'T',' ')
 
-                # Update the user's history in the database
-                history.update_one({'user': user}, {'$set': {'history': history_list}})
-                print("Item deleted from history")
-                return jsonify({'message': 'History item deleted successfully'})
-            else:
-                print("Item not found in history")
-                return jsonify({'message': 'Item not found in history'})
-        else:
-            print("User not found in history")
-            return jsonify({'message': 'User not found in history'})    
+        for i, entry in enumerate(user_history['history']):
+            ent_date = str(entry['date'])[:-7]
+
+            if entry['query'] == query and ent_date == date:
+                del user_history['history'][i]
+                history.update_one({'user': user}, {'$set': {'history': user_history['history']}})
+                print("History item deleted")
+                return jsonify({'message': 'History item deleted'})
+            
+        print("History item not found")
+        return jsonify({'error': 'History item not found'}), 404  
+             
     except Exception as e:
         print('Error', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
- """           
+
 
 @app.route('/api/get_history/<string:user>', methods=['POST'])
 def get_history(user):

@@ -10,7 +10,7 @@ const deleteFromHistory = async (item: historyObj, username: string) => {
             headers: {
                 'content-type': 'application/json'
             },
-            body: JSON.stringify({user: username, date: item.date, query: item.query})
+            body: JSON.stringify({user: username, date: new Date(item.date), query: item.query})
         })
 
         return response
