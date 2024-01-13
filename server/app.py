@@ -325,7 +325,7 @@ def insert_history(query, user):
         print("after insert")
 
 
-"""@app.route('/delete_history', methods=['POST'])
+@app.route('/api/delete_history', methods=['POST'])
 def delete_history():
     try:
         data = request.get_json()
@@ -334,15 +334,17 @@ def delete_history():
         if(user == ''):
             return jsonify({'error': 'Invalid user'})
         
+        print(data)
+        
         history.update_one({'user': user}, {'$pull': {'history': {'date': date}}})
-        return jsonify({'message':'Favourite deleted successfully'})
+        return jsonify({'message': + 'item deleted successfully'})
         
     except Exception as e:
         print('Error', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
- """
 
-@app.route('/delete_history', methods=['POST'])
+
+""""@app.route('/api/delete_history', methods=['POST'])
 def delete_history():
     try:
         data = request.get_json()
@@ -380,7 +382,7 @@ def delete_history():
     except Exception as e:
         print('Error', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
-            
+ """           
 
 @app.route('/api/get_history/<string:user>', methods=['POST'])
 def get_history(user):

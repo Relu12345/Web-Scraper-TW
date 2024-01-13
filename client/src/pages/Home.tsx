@@ -36,7 +36,6 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-     //console.log('Enter key pressed')
       handleSendData()
     }
   }
@@ -45,14 +44,13 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
 
     if (searchInput.length > 0) {
       setLoading(true)
-      searchElement(inputToSend.current?.value || '')
-      console.log('Sending data ', searchInput)
-      searchElement(searchInput)
       const result = await searchText(searchInput)
 
       if (result) {
         const data: ResponseMessage = await result.json()
         setSearchData(data.text)
+        searchElement(searchInput)
+        //searchElement(inputToSend.current?.value || '')
         setLoading(false)
       }
       
@@ -65,7 +63,7 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
       :
       <div
         onClick={() => setDisplayFilters(false)} 
-        className='block h-screen'>
+        className={`block ${searchData.length === 0? 'h-screen': 'h-full'} dark:bg-slate-800`}>
             <div className='flex text-xl pt-24 font-bold dark:text-white'>
               <FaHouseChimney className='mt-1'/>
               <h1 className='mx-2'>Home</h1>

@@ -13,6 +13,5 @@ export const textFormat = (text: string) => {
         textFormat += substring.charAt(0).toUpperCase() + 
             substring.slice(1, substring.length).toLowerCase() + ' '
     }
-    console.log(textFormat)
     return checkTextLength(textFormat)
 }

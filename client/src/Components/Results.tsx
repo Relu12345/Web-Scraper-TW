@@ -96,9 +96,6 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
         }),
     }
 
-
-        //console.log(favoritesItems)
-
     return (
         <>
             {searchedData.length === 0 ? ''
