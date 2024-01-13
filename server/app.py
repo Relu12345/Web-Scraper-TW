@@ -362,7 +362,19 @@ def delete_history(query, user):
             print("Item not found in history")
     else:
         print("User not found in history")    
+        
 
+@app.route('/get_history/<string:user>', methods=['GET'])
+def get_history(user):
+    if user == '':
+        return jsonify({'error': 'Invalid user'})
+
+    user_history = history.find_one({'user': user})
+    if user_history:
+        return jsonify({'history': user_history['history']})
+    else:
+        return jsonify({'error': 'User not found'})
+    
 @app.route('/api/text-api', methods=['POST'])
 def receive_data():
     try:
