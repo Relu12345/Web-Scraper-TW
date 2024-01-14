@@ -401,10 +401,12 @@ def get_favourites(user):
             print("Invalid user")
             return jsonify({'error': 'Invalid user'})
         user_favourites = favourites.find_one({'user': user})
-        print(user_favourites)
+        print(f"IN GET FAV, THE FAVORITES: {user_favourites}")
         if user_favourites:
             print(f"Found favourites: {user_favourites['favourites']}")
             return jsonify({'favourites': user_favourites['favourites']})
+        else:
+            return jsonify({'favourites': []})
     except Exception as e:
         print('Error', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
