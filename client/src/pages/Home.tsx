@@ -31,6 +31,7 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
   const [searchInput, setSearchInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [displayFilters, setDisplayFilters] = useState(false)
+  const [lastSearch, setLastSearch] = useState<string | null>(null)
   const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
   const inputToSend = useRef<HTMLInputElement | null>(null)
   const [itemsDisplayed, setItemsDisplayed] = useState(0)
@@ -40,12 +41,12 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
   })
 
   useEffect(() => {
-    if (isResearched) {
+    if (isResearched && isResearched != lastSearch) {
+      setLastSearch(isResearched)
       setSearchInput(isResearched)
       handleSendData()
-      setSearchInput('')
     }
-  }, [isResearched, searchInput])
+  }, [isResearched, searchInput, lastSearch])
 
   const handleAgeFilter = (from: number, to: number) => {
     setAgeFilter({from, to})
@@ -70,7 +71,6 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
         //searchElement(inputToSend.current?.value || '')
         setLoading(false)
       }
-      
     }
   }
 

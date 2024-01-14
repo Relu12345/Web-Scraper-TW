@@ -9,9 +9,10 @@ interface Props {
     searchElement: string | null
     handleSidebarState : (value: boolean) => void
     handleSidebarResearch: (value: string | null) => void
+    handleConfirmationDialog: (value: boolean) => void
 }
 
-export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSidebarState, handleSidebarResearch}) => {
+export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSidebarState, handleSidebarResearch, handleConfirmationDialog}) => {
     const [loading, setLoading] = useState(false) 
     //sidebar toggle functionality
     const [isToggleStateSidebar, setIsToggleStateSidebar] = useState<boolean>(false)
@@ -44,6 +45,8 @@ export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSideb
     const handleSidebarToggle = (value: boolean) => {
         setIsToggleStateSidebar(value)
     }
+
+    
   
     const callbackFunctions = {
       toggleSidebar: toggleStateSidebar,
@@ -73,6 +76,7 @@ export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSideb
                         latestSearch={searchElement}
                         onClose={closeSidebar}
                         handleSidebarResearch={handleSidebarResearch}
+                        handleConfirmationDialog={handleConfirmationDialog}
                     />
                 </div>
                 <div 

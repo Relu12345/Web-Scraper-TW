@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { 
   BsClockFill
 } from "react-icons/bs"
+import { useNavigate } from "react-router"
 import { getHistory } from '../API/getHistory'
 import { getUserInfoFromToken } from '../API/verifyToken'
 import LoadingScreen from '../utils/LoadingScreen'
@@ -13,9 +14,15 @@ interface HistoryObj {
   query: string
 }
 
+interface Props {
+  handleConfirmationDialog: (value: boolean) => void
+  handleResearch: (value: string) => void
+}
+
 const options = {day: '2-digit', month: 'short', year: 'numeric'}
 
-export const History = () => {
+export const History: React.FC<Props> = ({handleConfirmationDialog, handleResearch}) => {
+    const navigate=useNavigate()  
     const user = getUserInfoFromToken()?.sub?.username
     const [historyList, setHistoryList] = useState<HistoryObj[]>([])
     const [isFetched, setIsFetched] = useState(false)
@@ -81,9 +88,12 @@ export const History = () => {
               {historyList.map((item, id) => (
                 <tr
                   key={id}
-                  className={`${id % 2 ? 'bg-gray-300 dark:bg-slate-900' : ''} text-center`}
+                  className={`${id % 2 ? 'bg-gray-300 dark:bg-slate-900' : ''} text-center `}
                 >
-                  <td className='px-4 py-2'>
+                  <td 
+                    className='px-4 py-2 cursor-pointer'
+                    onClick={() => {handleResearch(historyList[id].query); navigate("/")}}
+                  >
                     {item.query}
                   </td> 
 
@@ -112,6 +122,7 @@ export const History = () => {
             item={selectedItem}
             username={user}
             handleFetch={handleFetch}
+            handleConfirmationDialog={handleConfirmationDialog}
           />
         }
 
