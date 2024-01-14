@@ -121,7 +121,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
                                         </h1>
 
                                         <button 
-                                            onClick={() => {setIsDeleteOpen(true); setFullObject(fullSearchObjects[id])}}
+                                            onClick={(e) => {e.stopPropagation(); setIsDeleteOpen(true); setFullObject(fullSearchObjects[id])}}
                                             className={`
                                                 flex mt-1 ml-4 pt-1.5 mr-1 px-2 justify-end rounded-xl hover:bg-gray-300
                                                 text-gray-800 hover:text-red-500 hover:dark:text-red-600 
