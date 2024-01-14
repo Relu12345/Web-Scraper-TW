@@ -131,7 +131,7 @@ def logout():
     return jsonify(logout=True, access_token=access_token)
 
 
-def scrape_google_scholar(query, user):
+def scrape_google_scholar(query, date_from, date_to):
     
     print(f'[SCRAPE] We here')
     results = []
@@ -142,7 +142,7 @@ def scrape_google_scholar(query, user):
 
     #For "i" pages:
     while page < 3:
-        url = f'https://scholar.google.com/scholar?start={page * 10}&q={query}'
+        url = f'https://scholar.google.com/scholar?start={page * 10}&q={query}&as_ylo={date_from}&as_yhi={date_to}'
         
         try:
             response = session.get(url, headers=headers, timeout=10)
@@ -184,7 +184,7 @@ def scrape_google_scholar(query, user):
     return results
 
 
-def scrape_ieee_xplore(query, user):
+def scrape_ieee_xplore(query, date_from, date_to):
     print('[SCRAPE IEEE XPLORE] We here')
     results = []
 
@@ -244,7 +244,7 @@ def scrape_ieee_xplore(query, user):
 
             # Construct the URL for the next page
             page += 1
-            next_page_url = f"https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText={query}&pageNumber={page}"
+            next_page_url = f"https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText={query}&pageNumber={page}&ranges={date_from}_{date_to}_Year"
 
             # Navigate to the next page
             driver.get(next_page_url)
@@ -279,9 +279,9 @@ class CustomThread(Thread):
          Thread.join(self)
          return self._return
 
-def scrape_both_sources(query, user):
-    google_thread = CustomThread(target=scrape_google_scholar, args=(query, user))
-    ieee_thread = CustomThread(target=scrape_ieee_xplore, args=(query, user))
+def scrape_both_sources(query, user, date_from, date_to):
+    google_thread = CustomThread(target=scrape_google_scholar, args=(query, date_from, date_to))
+    ieee_thread = CustomThread(target=scrape_ieee_xplore, args=(query, date_from, date_to))
 
     google_thread.start()
     ieee_thread.start()
@@ -396,11 +396,14 @@ def get_history(user):
 @app.route('/api/get_favourites/<string:user>', methods=['POST'])
 def get_favourites(user):
     try:
+        print("IN GET FAV")
         if(user == ''):
+            print("Invalid user")
             return jsonify({'error': 'Invalid user'})
         user_favourites = favourites.find_one({'user': user})
         print(user_favourites)
         if user_favourites:
+            print(f"Found favourites: {user_favourites['favourites']}")
             return jsonify({'favourites': user_favourites['favourites']})
     except Exception as e:
         print('Error', str(e))
@@ -416,56 +419,58 @@ def insert_favourite():
         source = data.get('source')
         authors = data.get('authors')
         title = data.get('title')
-        print(data)
+        print(f"IN INSERT FAV data: {data}")
         
         if(user == ''):
+            print("Invalid user")
             return jsonify({'error': 'Invalid user'})
 
-        if(favourites.find_one({'user': user})):
-            favourite_item = {
-                'url': url,
-                'source': source,
-                'authors': authors,
-                'title': title
-            }
+        favourite_item = {
+            'url': url, 
+            'source': source,
+            'authors': authors,
+            'title': title
+        }
+
+        if favourites.find_one({'user': user}):
+            # User has existing favorites
             favourites_list = favourites.find_one({'user': user})['favourites']
-            favourites_list.append({favourite_item})
+            favourites_list.append(favourite_item)
             favourites.update_one({'user': user}, {'$set':{'favourites': favourites_list}})
+
         else:
+            # User has no existing favorites
             favourites_item = {
                 'user': user,
-                'favourite': [{
-                    'url': url,
-                    'source': source,
-                    'authors': authors,
-                    'title': title
-                    }],
+                'favourites': [] # Initialize empty array
             }
+            favourites_item['favourites'].append(favourite_item) # Add new fave
             favourites.insert_one(favourites_item)
+        print(f"Favourite added")
         return jsonify({'message': 'Favorite added successfully'})
     except Exception as e:
         print('Error:', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
     
 
-@app.route('/delete_favourite', methods=['POST'])
+@app.route('/api/delete_favourite', methods=['POST'])
 def delete_favourite():
     try:
+        print("IN DELETE FAV")
         data = request.get_json()
         user = data.get('user')
         url = data.get('url')
         if(user == ''):
+            print("Invalid user")
             return jsonify({'error': 'Invalid user'})
         
         favourites.update_one({'user': user}, {'$pull': {'favourites': {'url': url}}})
+        print(f"Favourite deleted: {url}")
         return jsonify({'message':'Favourite deleted successfully'})
         
     except Exception as e:
         print('Error', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
-    
-
-
     
 
 @app.route('/api/text-api', methods=['POST'])
@@ -474,11 +479,14 @@ def receive_data():
         data = request.get_json()
         text = data.get('text', '')
         user = data.get('username', '')
-        result = scrape_both_sources(text, user)
+        date_from = data['date']['from']
+        date_to = data['date']['to']
+        result = scrape_both_sources(text, user, date_from, date_to)
         return jsonify({'message': 'Success', 'text': result})
     except Exception as e:
         print('Error:', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
+
 
 @app.route('/api/exportData', methods=['POST'])
 def get_export():
