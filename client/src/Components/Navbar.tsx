@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import {BsStack, BsMoonStars} from 'react-icons/bs/'
 import {removeTokenFromCookies} from '../API/verifyToken'
 import { useNavigate } from "react-router"
@@ -11,6 +11,7 @@ interface NavbarProps {
     handleTheme: () => void
     handleLoading: (value: boolean) => void
     displayProfile: boolean
+    handleProfileToggle: (value:boolean) => void
   }
 
 
@@ -27,7 +28,8 @@ const Navbar: React.FC<NavbarProps> = (props) => {
     }
 
     return (
-        <nav className=" bg-white fixed w-full shadow-lg p-4 dark:bg-gray-900 slow-change">
+        <nav className=" bg-white fixed w-full shadow-lg p-4 dark:bg-gray-900 slow-change"
+        >
             <div className="flex justify-between">
                 {/* Logo */}
                 <div className="my-2 text-xl xl:text-2xl font-bold text-gray-800 flex dark:text-white">
@@ -59,12 +61,16 @@ const Navbar: React.FC<NavbarProps> = (props) => {
                         onClick={props.handleTheme}
                         className="cursor-pointer w-20 h-10 -mt-1 relative rounded-full border-2 border-gray-500 bg-white dark:border-white dark:bg-slate-800">
                         <span className={` w-2/5 h-4/5 absolute rounded-full ml-2 my-1 bg-slate-800 dark:bg-white dark:ml-10 transition-all duration-500`}>
-                            {localStorage.theme === "dark" ? <BsMoonStars className="mt-1 mx-1.5"/> : <FaSun className="mt-1 mx-1.5 text-white"/>}
+                            {   localStorage.theme === "dark" ? 
+                                <BsMoonStars className="mt-1 mx-1.5"/> : 
+                                <FaSun className="mt-1 mx-1.5 text-white"/>
+                            }
                         </span>
                    </div>
                 
                     <Profile 
                         handleLogout={LogoutUser}
+                        handleProfileToggle={props.handleProfileToggle}
                         displayProfile={props.displayProfile}
                     />
                 </div>

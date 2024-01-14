@@ -2,23 +2,26 @@ interface ResponseMessageText {
     authors: Array<string>,
     title: string,
     url: string
+    source: string
 }
 
-const addItemToFavorites = async (item : ResponseMessageText) => {
+const addItemToFavorites = async (item : ResponseMessageText, user: string) => {
     try {
-        const response = await fetch("http://localhost:5000/api/add-favorites", {
+        const response = await fetch("http://localhost:5000/api/insert_favourite", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',   
             },
-            body: JSON.stringify(item)
+            body: JSON.stringify({user, url: item.url, source: item.source, authors: item.authors, title: item.title })
         })
+
+        return response
     } catch (error) {
         console.error("Failed to send selected item to the favorites list", error)
     }
 }
 
-const removeItemFromFavorites = async (item : ResponseMessageText) => {
+const removeItemFromFavorites = async (item : ResponseMessageText, user: string) => {
     try {
         const response = await fetch("http://localhost:5000/api/remove-favorites", {
             method: "DELETE",
@@ -32,13 +35,14 @@ const removeItemFromFavorites = async (item : ResponseMessageText) => {
     }
 }
 
-const getFavoritesItems = async () => {
+const getFavoritesItems = async (user: string) => {
     try {
-        const response = await fetch("http://localhost:5000/api/get-favorites", {
-            method: "GET",
+        const response = await fetch(`http://localhost:5000/api/get_favourites/${user}`, {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-            }    
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({user})    
         })
 
         return response.json()

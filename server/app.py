@@ -393,8 +393,21 @@ def get_history(user):
         print('Error', str(e))
         return jsonify({'message': 'Error processing the request'}), 500
     
+@app.route('/api/get_favourites/<string:user>', methods=['POST'])
+def get_favourites(user):
+    try:
+        if(user == ''):
+            return jsonify({'error': 'Invalid user'})
+        user_favourites = favourites.find_one({'user': user})
+        print(user_favourites)
+        if user_favourites:
+            return jsonify({'favourites': user_favourites['favourites']})
+    except Exception as e:
+        print('Error', str(e))
+        return jsonify({'message': 'Error processing the request'}), 500
+    
 
-@app.route('/insert_favourite', methods=['POST'])
+@app.route('/api/insert_favourite', methods=['POST'])
 def insert_favourite():
     try:    
         data = request.get_json()
@@ -403,6 +416,7 @@ def insert_favourite():
         source = data.get('source')
         authors = data.get('authors')
         title = data.get('title')
+        print(data)
         
         if(user == ''):
             return jsonify({'error': 'Invalid user'})
@@ -451,17 +465,7 @@ def delete_favourite():
         return jsonify({'message': 'Error processing the request'}), 500
     
 
-@app.route('/get_favourites/<user>', methods=['POST'])
-def get_favourites(user):
-    try:
-        if(user == ''):
-            return jsonify({'error': 'Invalid user'})
-        user_favourites = favourites.find_one({'user': user})
-        if user_favourites:
-            return jsonify({'favourites': user_favourites['favourites']})
-    except Exception as e:
-        print('Error', str(e))
-        return jsonify({'message': 'Error processing the request'}), 500
+
     
 
 @app.route('/api/text-api', methods=['POST'])

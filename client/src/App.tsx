@@ -20,6 +20,7 @@ const App  = () => {
   const [darkMode, setDarkMode] = useState(false)
   const [searchedElement, setSearchedElement] = useState<string | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [research, setResearch] = useState<string | null>(null)
 
   if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     document.documentElement.classList.add('dark')
@@ -45,6 +46,10 @@ const App  = () => {
     setSearchedElement(element)
   } 
 
+  const handleSidebarResearch = (value: string | null) => {
+    setResearch(value)
+  }
+
   return (
     <div className={`App ${darkMode && "dark"}`} >
         <Routes>
@@ -53,10 +58,11 @@ const App  = () => {
                 handleTheme={handleDarkMode} 
                 searchElement={searchedElement}
                 handleSidebarState={handleSidebarStatus}
+                handleSidebarResearch={handleSidebarResearch}
             />} path='/' >
               <Route element={<Home 
                 searchElement={modifySearchElement} 
-                sidebarState={isSidebarOpen}
+                isResearched={research}
               /> } path='' />
               <Route element={<History />} path="history" />
               <Route element={<Favorites />} path="favorites" />

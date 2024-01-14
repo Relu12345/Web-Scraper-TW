@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react'
 import Results from '../Components/Results'
 import { FaHouseChimney, FaMagnifyingGlass } from "react-icons/fa6"
-import { IoSettings } from "react-icons/io5"
 import Logo from '../Images/logo_transparent-1.svg'
 import WhiteLogo from '../Images/white-logo.png'
 import LoadingScreen from '../utils/LoadingScreen'
@@ -11,7 +10,7 @@ import { Filters } from '../Components/Filters'
 
 interface Props {
   searchElement: (element: string) => void
-  sidebarState : boolean
+  isResearched: string | null
 }
 
 interface ResponseMessage {
@@ -22,17 +21,35 @@ interface ResponseMessage {
 interface ResponseMessageText {
   authors: Array<string>,
   title: string,
-  url: string
+  url: string,
+  source: string
 }
 
+const currentAge = new Date().getFullYear()
 
-
-export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
+export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
   const [searchInput, setSearchInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [displayFilters, setDisplayFilters] = useState(false)
   const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
   const inputToSend = useRef<HTMLInputElement | null>(null)
+  const [itemsDisplayed, setItemsDisplayed] = useState(0)
+  const [ageFilter, setAgeFilter] = useState({
+    from: 1900,
+    to: currentAge
+  })
+
+  useEffect(() => {
+    if (isResearched) {
+      setSearchInput(isResearched)
+      handleSendData()
+      setSearchInput('')
+    }
+  }, [isResearched, searchInput])
+
+  const handleAgeFilter = (from: number, to: number) => {
+    setAgeFilter({from, to})
+  }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -41,11 +58,11 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
   }
 
   const handleSendData = async () => {
-
     if (searchInput.length > 0) {
       setLoading(true)
-      const result = await searchText(searchInput)
-
+      console.log(ageFilter)
+      const result = await searchText({text:searchInput, date: {from: ageFilter.from, to: ageFilter.to}})
+      
       if (result) {
         const data: ResponseMessage = await result.json()
         setSearchData(data.text)
@@ -57,13 +74,17 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
     }
   }
 
+  const handleItemsDisplayed = (value: number) => {
+    setItemsDisplayed(value)
+  }
+
     return (
        loading ? 
         <LoadingScreen />
       :
       <div
         onClick={() => setDisplayFilters(false)} 
-        className={`block ${searchData.length === 0? 'h-screen': 'h-full'} dark:bg-slate-800`}>
+        className={`block overflow-y-auto h-screen mt-0 dark:bg-slate-800`}>
             <div className='flex text-xl pt-24 font-bold dark:text-white'>
               <FaHouseChimney className='mt-1'/>
               <h1 className='mx-2'>Home</h1>
@@ -83,7 +104,7 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
             }
 
             {/* Search bar */}
-            <div className='fiexed  items-center justify-center md:text-center mt-6'>
+            <div className='fiexed items-center justify-center md:text-center mt-6'>
               <div className='relative w-full'>
                 <input 
                   type="text"
@@ -95,7 +116,7 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
                   ref={inputToSend}
                   onChange={(event) => {setSearchInput(event.target.value)}}
                   className={`
-                    ${sidebarState ? 'w-1/2 lg:w-1/2 xl:w-7/12 2xl:w-10/12 ml-0 lg:ml-24 2xl:ml-0' : 'w-1/2 lg:w-10/12'}  border-2 border-gray-400 bg-white py-2.5 
+                    mx-auto w-8/12 lg:w-10/12  border-2 border-gray-400 bg-white py-2.5 
                     rounded-md px-2 focus:outline-none focus:border-black 
                     dark:bg-slate-900 dark:border-gray-400 
                     focus:dark:border-gray-200 dark:placeholder-gray-400 
@@ -119,13 +140,17 @@ export const Home: React.FC<Props> = ({searchElement, sidebarState}) => {
               
             </div>
 
-            <Results searchedData={searchData} />
+            <Results 
+              searchedData={searchData} 
+              onDisplay={handleItemsDisplayed}
+            />
 
             {
               displayFilters &&
                 <Filters 
                   open={displayFilters} 
                   onClose={() => setDisplayFilters(false)}
+                  setAge={handleAgeFilter}
                 />
             }
             
