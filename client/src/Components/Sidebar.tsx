@@ -8,61 +8,20 @@ import { DeleteDialog } from "./DeleteDialog"
 import {textFormat} from '../utils/textFormat'
 import {getHistory} from '../API/getHistory'
 import { getUserInfoFromToken } from "../API/verifyToken"
-import { searchText } from "../API/searchText"
-import { 
-    BsFillHouseDoorFill, 
-    BsClockFill,
-    BsFillMoonStarsFill 
-} from "react-icons/bs"
 
 interface historyObj {
     date: Date,
     query: string
 }
 
-
-interface sidebarElem {
-    id: number,
-    title: string,
-    icon: JSX.Element,
-    route: string
-}
-
-interface ResponseMessageText {
-    authors: Array<string>,
-    title: string,
-    url: string
-}
-
 interface sidebarProps {
     isVisible: boolean,
-    //latestSearch: ResponseMessageText
     latestSearch: string | null
     onClose: (value: boolean) => void
+    handleSidebarResearch: (value: string | null) => void
 }
 
-const sidebarElements = [
-    {
-        id: 0,
-        "title": "Home",
-        "icon": <BsFillHouseDoorFill />,
-        "route" : "/"
-    },
-    {
-        id: 1,
-        "title": "History",
-        "icon": <BsClockFill />,
-        "route": "/history"
-    },
-    {
-        id: 2,
-        "title": "Favorites",
-        "icon": <BsFillMoonStarsFill />,
-        "route": "/favorites"
-    }
-]
-
-const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => {
+const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, handleSidebarResearch}) => {
     const navigate=useNavigate()
     const user = getUserInfoFromToken()?.sub 
     const windowSize = useWindowSize()
@@ -85,7 +44,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
             setPreviousItem(latestSearch)
         }
         setTimeout(() => {}, 1500)
-    }, [sidebarHistory, latestSearch])
+    }, [sidebarHistory, latestSearch, firstHistoryFetch])
 
     useEffect(() => {
         const maxElements = Math.min(windowHeight, sidebarHistory.length)
@@ -110,16 +69,14 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
         }
     }
 
-    const handleDeleteItem = (item: historyObj) => {
-        
-    }
-
-    const handleSearch = async (text: string) => {
-
+    const handleFirstFetch = (value: boolean) => {
+        setFirstHistoryFetch(true)
     }
     
     return (
-        <aside className={`w-full transition-all duration-300`}>
+        <aside 
+            onClick={(e) => e.stopPropagation()}
+            className={`w-full transition-all duration-300`}>
             <div className="px-4 flex ">
                 {/*Sidebar content */}
                 {isVisible &&
@@ -149,6 +106,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
                                return (
                                     <div 
                                         key={id + elem}
+                                        onClick={() => {navigate("/"); handleSidebarResearch(fullSearchObjects[id].query); onClose(true)}}
                                         className={`
                                             flex justify-between p-2 font-semibold text-md `
                                         }
@@ -163,7 +121,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
                                         </h1>
 
                                         <button 
-                                            onClick={() => {setIsDeleteOpen(true); setFullObject(fullSearchObjects[id])}}
+                                            onClick={(e) => {e.stopPropagation(); setIsDeleteOpen(true); setFullObject(fullSearchObjects[id])}}
                                             className={`
                                                 flex mt-1 ml-4 pt-1.5 mr-1 px-2 justify-end rounded-xl hover:bg-gray-300
                                                 text-gray-800 hover:text-red-500 hover:dark:text-red-600 
@@ -178,10 +136,10 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
                         </ul>
                         {
                             visibleHistory.length === windowHeight  &&
-                            <div className="flex my-3 ">
+                            <div className="flex my-6 ">
                                 <hr className="flex w-1/4 mr-1 mt-2.5 border-gray-400" />
                                 <button 
-                                    onClick={() => navigate('/history')}
+                                    onClick={() => {navigate('/history');onClose(false)}}
                                     className="text-sm font-semibold dark:text-white mx-1"
                                 >
                                         Show more
@@ -200,6 +158,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose}) => 
                             onClose={() => setIsDeleteOpen(false)}
                             item={fullObject}
                             username={user?.username}
+                            handleFetch={handleFirstFetch}
                         />
                     }
                 

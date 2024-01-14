@@ -1,6 +1,9 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import { IoMdClose } from "react-icons/io"
 import { deleteFromHistory } from '../API/deleteFromHistory'
+import { Confirmation } from '../Components/Confirmation'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 interface historyObj {
     date: Date,
@@ -13,9 +16,25 @@ interface Props {
     onClose: () => void
     item: historyObj | null
     username: string | undefined
+    handleFetch: (value: boolean) => void
 }
 
-export const DeleteDialog: React.FC<Props> = ({text, isOpen, onClose, item, username}) => {
+export const DeleteDialog: React.FC<Props> = ({text, isOpen, onClose, item, username, handleFetch}) => {
+    const [isDeleted, setIsDeleted] = useState(false)
+
+    const notify = () => {
+        toast.info('Item removed successfully!', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+        })
+    }
+
     const handleDelete = async (item: historyObj | null, username: string | undefined) => {
         if (item && username) {
             const response = await deleteFromHistory(item, username)
@@ -23,6 +42,9 @@ export const DeleteDialog: React.FC<Props> = ({text, isOpen, onClose, item, user
             if (response) {
                 console.log("item deleted!")
                 console.log(await response.text())
+                handleFetch(true)
+                setIsDeleted(true)
+                notify()
             }
         }
         onClose()
@@ -76,9 +98,10 @@ export const DeleteDialog: React.FC<Props> = ({text, isOpen, onClose, item, user
                             Delete
                         </button>
                     </div>
-
+                   
                 </div>
             </div>
+            <ToastContainer />
         </div>
     )
 }

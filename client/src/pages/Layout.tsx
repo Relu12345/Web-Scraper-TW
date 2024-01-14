@@ -1,4 +1,4 @@
-import React, {MutableRefObject, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import Sidebar from '../Components/Sidebar'
 import Navbar from '../Components/Navbar'
 import { Outlet } from 'react-router-dom'
@@ -8,22 +8,15 @@ interface Props {
     handleTheme: () => void
     searchElement: string | null
     handleSidebarState : (value: boolean) => void
+    handleSidebarResearch: (value: string | null) => void
 }
 
-interface ResponseMessageText {
-    authors: Array<string>,
-    title: string,
-    url: string
-}
-
-export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSidebarState}) => {
+export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSidebarState, handleSidebarResearch}) => {
     const [loading, setLoading] = useState(false) 
     //sidebar toggle functionality
     const [isToggleStateSidebar, setIsToggleStateSidebar] = useState<boolean>(false)
-    //gettin the search result from the navbar
-    //const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
     //Close profile description 
-    const [isToggleProfile, setIsToggleProfile] = useState(true)
+    const [isToggleProfile, setIsToggleProfile] = useState(false)
 
     useEffect(() => {
         handleSidebarState(isToggleStateSidebar)
@@ -47,27 +40,31 @@ export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSideb
         setIsToggleProfile(value)
     }
 
+
+    const handleSidebarToggle = (value: boolean) => {
+        setIsToggleStateSidebar(value)
+    }
   
     const callbackFunctions = {
       toggleSidebar: toggleStateSidebar,
       handleTheme: handleTheme,
       handleLoading: handleLoading,
-      displayProfile: isToggleProfile
+      displayProfile: isToggleProfile,
+      handleProfileToggle: handleProfileToggle
     }
 
     return (
         <div 
-            
-            className='w-full h-full'
+            onClick={() => handleProfileToggle(false)}
+            className='w-full h-full bg-gray-50 dark:bg-slate-800'
         >
             <Navbar {...callbackFunctions} />
             <div 
-                onClick={() => setIsToggleProfile(false)}
                 className='h-full bg-gray-50 dark:bg-slate-800'
             >                
                 <div className={`
                         ${isToggleStateSidebar ? 
-                        "fixed top-0 h-full  w-2/6 md:w-2/6 md:w-60 bg-white shadow-md dark:bg-gray-900 slow-change z-50 opacity-100" : 'opacity-0'} 
+                        "fixed top-0 h-full w-2/4  md:w-2/5 lg:w-1/4 bg-white shadow-md dark:bg-gray-900 slow-change z-50 opacity-100" : 'opacity-0'} 
                         transition-all duration-300`
                     }
                 >
@@ -75,9 +72,13 @@ export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSideb
                         isVisible={isToggleStateSidebar} 
                         latestSearch={searchElement}
                         onClose={closeSidebar}
+                        handleSidebarResearch={handleSidebarResearch}
                     />
                 </div>
-                <div className=' mx-6 bg-gray-50 dark:bg-slate-800'>
+                <div 
+                    onClick={() => handleSidebarToggle(false)}
+                    className={`mx-6  bg-gray-50 dark:bg-slate-800`}
+                >
                     {
                         loading ?
                         <LoadingScreen /> :

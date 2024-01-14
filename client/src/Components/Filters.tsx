@@ -4,12 +4,13 @@ import {YearSlider} from '../utils/YearSlider'
 
 interface Props {
     open: boolean,
-    onClose: () => void;
+    onClose: () => void,
+    setAge: (from: number, to: number) => void
 }
 
 const currentYear = new Date().getFullYear()
 
-export const Filters: React.FC<Props> = ({open, onClose}) => {
+export const Filters: React.FC<Props> = ({open, onClose, setAge}) => {
 
     return (
         <div
@@ -48,9 +49,11 @@ export const Filters: React.FC<Props> = ({open, onClose}) => {
                             max={currentYear}
                             name='SB-1'
                             forid='display1'
+                            setAge={setAge}
+                            onClose={onClose}
                         />
                     </div>
-                </div>
+                </div> 
             </div>
         </div>
      )

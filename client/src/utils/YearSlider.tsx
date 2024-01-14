@@ -5,9 +5,11 @@ interface Props {
     max: number
     name: string
     forid: string
+    setAge: (from: number, to: number) => void
+    onClose: () => void
 }
 
-export const YearSlider: React.FC<Props> = ({min, max, name, forid}) => {
+export const YearSlider: React.FC<Props> = ({min, max, name, forid, setAge, onClose}) => {
     const [inputFrom, setInputFrom] = useState(min)
     const [inputTo, setInputTo] = useState(max)
 
@@ -31,7 +33,6 @@ export const YearSlider: React.FC<Props> = ({min, max, name, forid}) => {
                 slider.style.left = `${(inputFrom - min) / (max - min) * 100}%`
           }
         }
-        console.log(slider?.style.right + "............." + slider?.style.left)
     }, [inputFrom, inputTo, min, max, name, forid])
     
 
@@ -111,12 +112,21 @@ export const YearSlider: React.FC<Props> = ({min, max, name, forid}) => {
                 />
             </div>
 
-            <p className='mt-8 text-lg text-black dark:text-white'>
+            <p className='mt-8 text-lg text-black text-center dark:text-white'>
                 Selected range of years
                 <span className='font-semibold mx-2'>
                     {`${inputFrom} - ${inputTo}`}
                 </span>
             </p>
+
+           <div className='flex justify-end text-end items-end'>
+            <button
+                    onClick={() => {setAge(inputFrom, inputTo); onClose()}}
+                    className='flex text-md font-semibold mt-6 p-2 rounded-md shadow-lg bg-blue-500 dark:bg-blue-600 hover:dark:bg-indigo-700'
+                >
+                    Confirm
+                </button>
+           </div>
          </div>
     )
 }

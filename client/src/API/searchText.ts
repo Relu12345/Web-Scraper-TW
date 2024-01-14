@@ -1,13 +1,15 @@
 import { jwtDecode } from "jwt-decode";
 import { getTokenFromCookies, getUserInfoFromToken } from "./verifyToken";
 
-interface TextResult {
-    authors: string[],
-    titles: string,
-    url: string
+interface SearchProps {
+    text: string,
+    date: {
+        from: number,
+        to: number
+    }
 }
 
-const searchText = async(text:string) => {
+const searchText = async({text, date}: SearchProps) => {
     try {
         const token = getTokenFromCookies();
         const decoded = jwtDecode(token!).sub?.username;
@@ -17,7 +19,7 @@ const searchText = async(text:string) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({text, username: decoded})
+            body: JSON.stringify({text, username: decoded, date: {from: date.from, to: date.to}})
         })
 
         if (response.ok)
