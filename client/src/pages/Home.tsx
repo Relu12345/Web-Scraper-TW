@@ -142,7 +142,6 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
 
             <Results 
               searchedData={searchData} 
-              onDisplay={handleItemsDisplayed}
             />
 
             {

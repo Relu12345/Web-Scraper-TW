@@ -6,10 +6,9 @@ import { CiStar } from "react-icons/ci"
 import Select from 'react-select'
 import { getUserInfoFromToken } from '../API/verifyToken'
 import {getFavoritesItems, addItemToFavorites, removeItemFromFavorites} from '../API/manageFavorites'
-
+import GoogleScholarIcon from '../Images/scholarIcon.svg'
 interface SearchedData {
     searchedData: ResponseMessageText[]
-    onDisplay: (value: number) => void
 }
 
 interface ResponseMessageText {
@@ -26,7 +25,7 @@ const displayItems = [
     {value: 25, label: "25"}
 ]
 
-const Results: React.FC<SearchedData> = ({searchedData, onDisplay}) => {
+const Results: React.FC<SearchedData> = ({searchedData}) => {
     const user = getUserInfoFromToken()?.sub?.username
     const [selectedItems, setSelectedItems] = useState<Array<number>>([])
     const [favoritesItems, setFavoritesItems] = useState<ResponseMessageText[]>([])
@@ -43,19 +42,11 @@ const Results: React.FC<SearchedData> = ({searchedData, onDisplay}) => {
     const [error, setError] = useState<string>('')
 
         useEffect(() => {
-        const checkForFavoriteItems = async () => {
-            /*const favoritesList: ResponseMessageText[] = await getFavoritesItems()
+            if (searchedData.length > 0 ) {
+                handleFavourites()
 
-            for (let elem of searchedData) {
-                if (favoritesList.includes(elem))
-                    favoritesItems.push(elem)
             }
-            */
-            if (searchedData.length > 0) {
-                //handleFavourites()
-            }
-        }
-        checkForFavoriteItems()
+            
         setSelectedItems([])
     }, [searchedData,  itemsPerPage])
 
@@ -64,11 +55,24 @@ const Results: React.FC<SearchedData> = ({searchedData, onDisplay}) => {
             return
 
         const result = await getFavoritesItems(user)
-
-        if (result) {
-            console.log(await result)
+        const favoritesList: ResponseMessageText[] =  result.favourites
+        
+        setFavoritesItems([])
+        for (let elem of searchedData) {
+            if (favoritesList.some(favorite => compareObjects(favorite, elem))) {
+                setFavoritesItems(prevFavorites => [...prevFavorites, elem]);
+            }
         }
+        setTimeout(() => {
+            
+        }, 1500)
+        
     }
+
+    const compareObjects = (obj1: ResponseMessageText, obj2: ResponseMessageText): boolean => {
+        // Implement your own logic to compare objects based on their content
+        return JSON.stringify(obj1) === JSON.stringify(obj2);
+    };
     
 
     const handlePageRendering = () => {
@@ -107,11 +111,6 @@ const Results: React.FC<SearchedData> = ({searchedData, onDisplay}) => {
             if (currentPage < totalPages)
                 pageButtons.push(renderPageButton(totalPages))
         }
-
-        
-
-        
-
         return <div>{pageButtons}</div>
     }
 
@@ -276,7 +275,7 @@ const Results: React.FC<SearchedData> = ({searchedData, onDisplay}) => {
                                             type="checkbox"
                                             className='mx-9 w-4 h-4'
                                             checked={selectedItems.includes(searchedData.indexOf(data))}
-                                            onChange={() => handleSelectedItem(searchedData.indexOf(data))} 
+                                            onChange={() => {handleSelectedItem(searchedData.indexOf(data))}} 
                                         />
                                     </td>
                                     <td className='p-4  hover:text-blue-600 font-medium dark:text-blue-300'>
@@ -288,19 +287,23 @@ const Results: React.FC<SearchedData> = ({searchedData, onDisplay}) => {
                                         ))}
                                     </td>
 
-                                    <td className='p-2 dark:text-white text-center'>
-                                        {data.source}
+                                    <td className='flex justify-center items-center pt-10 text-center'>
+                                        <img 
+                                            src={GoogleScholarIcon} 
+                                            alt="scholar logo" 
+                                            width={30}
+                                        />
                                     </td>
 
                                     <td className='p-2 '>
                                         {favoritesItems.includes(data)?
                                             <MdOutlineStar 
-                                            onClick={() => handleFavoritesItem(searchedData.indexOf(data))}
+                                            onClick={() => {handleFavoritesItem(searchedData.indexOf(data))}}
                                             className='mx-auto  text-2xl mt-1 text-yellow-600 cursor-pointer'
                                         />
                                             :
                                             <CiStar 
-                                            onClick={() => handleFavoritesItem(searchedData.indexOf(data))}
+                                            onClick={() => {handleFavoritesItem(searchedData.indexOf(data))}}
                                             className='mx-auto  text-2xl mt-1 text-dark dark:text-white cursor-pointer'
                                         />
                                         }
