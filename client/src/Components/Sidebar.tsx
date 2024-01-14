@@ -19,9 +19,10 @@ interface sidebarProps {
     latestSearch: string | null
     onClose: (value: boolean) => void
     handleSidebarResearch: (value: string | null) => void
+    handleConfirmationDialog: (value: boolean) => void
 }
 
-const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, handleSidebarResearch}) => {
+const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, handleSidebarResearch, handleConfirmationDialog}) => {
     const navigate=useNavigate()
     const user = getUserInfoFromToken()?.sub 
     const windowSize = useWindowSize()
@@ -106,7 +107,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
                                return (
                                     <div 
                                         key={id + elem}
-                                        onClick={() => {navigate("/"); handleSidebarResearch(fullSearchObjects[id].query); onClose(true)}}
+                                        onClick={(e) => {e.stopPropagation(); handleSidebarResearch(fullSearchObjects[id].query); navigate("/");  onClose(true)}}
                                         className={`
                                             flex justify-between p-2 font-semibold text-md `
                                         }
@@ -159,6 +160,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
                             item={fullObject}
                             username={user?.username}
                             handleFetch={handleFirstFetch}
+                            handleConfirmationDialog={handleConfirmationDialog}
                         />
                     }
                 

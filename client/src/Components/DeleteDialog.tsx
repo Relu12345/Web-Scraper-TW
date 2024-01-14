@@ -1,9 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { IoMdClose } from "react-icons/io"
 import { deleteFromHistory } from '../API/deleteFromHistory'
-import { Confirmation } from '../Components/Confirmation'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 
 interface historyObj {
     date: Date,
@@ -17,23 +14,12 @@ interface Props {
     item: historyObj | null
     username: string | undefined
     handleFetch: (value: boolean) => void
+    handleConfirmationDialog: (value: boolean) => void
 }
 
-export const DeleteDialog: React.FC<Props> = ({text, isOpen, onClose, item, username, handleFetch}) => {
+export const DeleteDialog: React.FC<Props> = ({text, isOpen, onClose, item, username, handleFetch, handleConfirmationDialog}) => {
     const [isDeleted, setIsDeleted] = useState(false)
-
-    const notify = () => {
-        toast.info('Item removed successfully!', {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "dark",
-        })
-    }
+    
 
     const handleDelete = async (item: historyObj | null, username: string | undefined) => {
         if (item && username) {
@@ -43,12 +29,17 @@ export const DeleteDialog: React.FC<Props> = ({text, isOpen, onClose, item, user
                 console.log("item deleted!")
                 console.log(await response.text())
                 handleFetch(true)
-                setIsDeleted(true)
-                notify()
+                handleConfirmationDialog(true)
+                onClose()
+                
             }
+            
+            else
+                onClose()
         }
-        onClose()
+        console.log(isDeleted)
     }
+
 
     return (
         <div 
@@ -91,17 +82,19 @@ export const DeleteDialog: React.FC<Props> = ({text, isOpen, onClose, item, user
                             Cancel
                         </button>
 
-                        <button 
-                            onClick={() => handleDelete(item, username)}
-                            className='bg-red-500  text-white p-2 rounded-md dark:bg-red-600'
-                        >
-                            Delete
-                        </button>
+                        <div>
+                            <button 
+                                onClick={() => {handleDelete(item, username);}}
+                                className='bg-red-500  text-white p-2 rounded-md dark:bg-red-600'
+                            >
+                                Delete
+                            </button>
+                            
+                        </div>
                     </div>
                    
                 </div>
             </div>
-            <ToastContainer />
         </div>
     )
 }

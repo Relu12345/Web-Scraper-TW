@@ -23,13 +23,14 @@ const addItemToFavorites = async (item : ResponseMessageText, user: string) => {
 
 const removeItemFromFavorites = async (item : ResponseMessageText, user: string) => {
     try {
-        const response = await fetch("http://localhost:5000/api/remove-favorites", {
-            method: "DELETE",
+        const response = await fetch("http://localhost:5000/api/delete_favourite", {
+            method: "POST",
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(item)
+            body: JSON.stringify({user, url: item.url})
         })
+        return response
     } catch (error) {
         console.error("Failed to send selected item to be removed from the favorites list", error)
     }
