@@ -7,6 +7,7 @@ import Select from 'react-select'
 import { getUserInfoFromToken } from '../API/verifyToken'
 import {getFavoritesItems, addItemToFavorites, removeItemFromFavorites} from '../API/manageFavorites'
 import GoogleScholarIcon from '../Images/scholarIcon.svg'
+import IEEELogo from '../Images/IEEE_logo.svg'
 interface SearchedData {
     searchedData: ResponseMessageText[]
 }
@@ -291,9 +292,24 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
 
                                     <td className='flex justify-center items-center pt-10 text-center dark:text-white'>
                                         {data.source.map((elem, id) => (
-                                            <h1 key={id}>
-                                                {elem}
-                                            </h1>
+                                            <div className='flex mx-2'>
+                                                {
+                                                    elem === 'Google Scholar' ? 
+                                                    <img 
+                                                        src={GoogleScholarIcon} 
+                                                        alt="google scholar"
+                                                        width={10}
+                                                        className='mx-2'
+                                                    /> :
+                                                    <img 
+                                                        src={IEEELogo}
+                                                        alt="IEEE Xplor"
+                                                        width={40}
+                                                        className='mx-2 ' 
+                                                    />
+
+                                                }
+                                            </div>
                                         ))}
                                     </td>
 

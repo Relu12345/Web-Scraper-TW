@@ -41,11 +41,11 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
   })
 
   useEffect(() => {
-    console.log(lastSearch)
-    if (isResearched != null && isResearched !== lastSearch.current) {
+    
+    if (isResearched != null && isResearched ) {
       setSearchInput(isResearched)
       handleSendData()
-      lastSearch.current = isResearched
+      
       //setLastSearch(isResearched)
     }
   }, [isResearched, searchInput , lastSearch ])
@@ -72,6 +72,7 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
         searchElement(searchInput)
         //searchElement(inputToSend.current?.value || '')
         setLoading(false)
+        lastSearch.current = isResearched
       }
     }
   }
