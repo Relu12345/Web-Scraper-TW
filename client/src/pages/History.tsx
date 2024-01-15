@@ -116,7 +116,7 @@ export const History: React.FC<Props> = ({handleConfirmationDialog, handleResear
         {
           isDeleteOpen && 
           <DeleteDialog 
-            text={"Are you sure you want to delte this item from history ?"}
+            text={"Are you sure you want to delete this item from history ?"}
             isOpen={isDeleteOpen}
             onClose={() => setIsDeleteOpen(false)}
             item={selectedItem}

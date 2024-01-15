@@ -7,7 +7,7 @@ import LoadingScreen from '../utils/LoadingScreen'
 
 interface MessageText {
   title: string,
-  source: string,
+  source: string[],
   authors: string[],
   url: string
 }
@@ -41,14 +41,14 @@ export const Favorites = () => {
 
   return (
     isLoading ? <LoadingScreen /> :
-    <div className='h-screen text-xl dark:bg-slate-800 dark:text-white'>
-      <div className='pt-24 block overflow-y-auto'>
+    <div className='h-screen text-xl dark:bg-slate-800 dark:text-white overflow-y-auto'>
+      <div className='pt-24 block '>
         <div className='flex'>
           <BsFillMoonStarsFill className='text-xl mt-1 dark:text-white'/>
           <h1 className='ml-2 font-bold'>Favorites</h1>
         </div>
 
-        <div className='mx-auto my-6 '>
+        <div className='mx-auto my-6'>
           <Results 
             searchedData={favoritesList}
           />

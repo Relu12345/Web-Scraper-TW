@@ -2,7 +2,7 @@ interface ResponseMessageText {
     authors: Array<string>,
     title: string,
     url: string
-    source: string
+    source: Array<string>
 }
 
 const addItemToFavorites = async (item : ResponseMessageText, user: string) => {

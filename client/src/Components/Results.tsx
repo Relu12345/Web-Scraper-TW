@@ -7,6 +7,7 @@ import Select from 'react-select'
 import { getUserInfoFromToken } from '../API/verifyToken'
 import {getFavoritesItems, addItemToFavorites, removeItemFromFavorites} from '../API/manageFavorites'
 import GoogleScholarIcon from '../Images/scholarIcon.svg'
+import IEEELogo from '../Images/IEEE_logo.svg'
 interface SearchedData {
     searchedData: ResponseMessageText[]
 }
@@ -15,7 +16,7 @@ interface ResponseMessageText {
     authors: Array<string>,
     title: string,
     url: string
-    source: string
+    source:  Array<string>
 }
 
 //No. of results displayed per page
@@ -77,7 +78,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
 
     const handlePageRendering = () => {
         if (totalPages < maxVisiblePages) {
-            for (let i = 1; i < totalPages; i++)
+            for (let i = 1; i <= totalPages; i++)
                 pageButtons.push(renderPageButton(i))
         }
         else {
@@ -140,7 +141,6 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
     const nextPage = () => {
         if (indexOfLastItem < (searchedData? searchedData.length : 1)) {
             setCurrentPage(currentPage + 1)
-            
         }
     }
 
@@ -165,6 +165,8 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
           ...provided,
           paddingTop: 0,
           paddingBottom: 0, 
+          position: 'relative',
+          zIndex: 1,
         }),
     }
 
@@ -211,6 +213,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                     placeholder={itemsPerPage}
                                     styles={customStyles}
                                     onChange={(e:any) => {setItemsPerPage(e.value); setCurrentPage(1)}}
+                                    className='text-black'
                                 />
                                 <span className="mt-2 ml-1 dark:text-white">
                                     results
@@ -287,12 +290,27 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                         ))}
                                     </td>
 
-                                    <td className='flex justify-center items-center pt-10 text-center'>
-                                        <img 
-                                            src={GoogleScholarIcon} 
-                                            alt="scholar logo" 
-                                            width={30}
-                                        />
+                                    <td className='flex justify-center items-center pt-10 text-center dark:text-white'>
+                                        {data.source.map((elem, id) => (
+                                            <div className='flex mx-2'>
+                                                {
+                                                    elem === 'Google Scholar' ? 
+                                                    <img 
+                                                        src={GoogleScholarIcon} 
+                                                        alt="google scholar"
+                                                        width={10}
+                                                        className='mx-2'
+                                                    /> :
+                                                    <img 
+                                                        src={IEEELogo}
+                                                        alt="IEEE Xplor"
+                                                        width={40}
+                                                        className='mx-2 ' 
+                                                    />
+
+                                                }
+                                            </div>
+                                        ))}
                                     </td>
 
                                     <td className='p-2 '>

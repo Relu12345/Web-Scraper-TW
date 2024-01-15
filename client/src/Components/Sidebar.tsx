@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react"
+import React, { useEffect, useRef, useState} from "react"
 import { useNavigate } from "react-router"
 import Typewriter from '../utils/Typewriter'
 import { useWindowSize } from "../utils/useWindowSize"
@@ -34,6 +34,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
     const [firstHistoryFetch, setFirstHistoryFetch] = useState(true)
     const [fullObject, setFullObject] = useState<historyObj | null>(null)
     const [fullSearchObjects, setFullSearchObjects] = useState<historyObj[]>([])
+    const sendingResearchRef = useRef<null | string>(null)
 
     useEffect(() => {
         if (firstHistoryFetch) {
@@ -107,7 +108,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
                                return (
                                     <div 
                                         key={id + elem}
-                                        onClick={(e) => {e.stopPropagation(); handleSidebarResearch(fullSearchObjects[id].query); navigate("/");  onClose(true)}}
+                                        onClick={(e) => {e.stopPropagation(); handleSidebarResearch(fullSearchObjects[id].query); navigate("/"); onClose(true) }}
                                         className={`
                                             flex justify-between p-2 font-semibold text-md `
                                         }
@@ -154,7 +155,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
                     {
                         isDeleteOpen &&
                         <DeleteDialog 
-                            text={"Are you sure you want to delte this item from history ?"}
+                            text={"Are you sure you want to delete this item from history ?"}
                             isOpen={isDeleteOpen}
                             onClose={() => setIsDeleteOpen(false)}
                             item={fullObject}
