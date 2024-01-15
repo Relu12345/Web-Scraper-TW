@@ -1,6 +1,6 @@
 const checkTextLength = (text: string) => {
-    if (text.length > 10) {
-        return text.slice(0,10).concat("...")
+    if (text.length > 15) {
+        return text.slice(0,15).concat("...")
     }
     return text
 }

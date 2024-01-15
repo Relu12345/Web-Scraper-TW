@@ -42,7 +42,7 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
 
   useEffect(() => {
     
-    if (isResearched != null && isResearched ) {
+    if (isResearched != null && isResearched !== lastSearch.current ) {
       setSearchInput(isResearched)
       handleSendData()
       

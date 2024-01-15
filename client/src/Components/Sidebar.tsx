@@ -71,17 +71,6 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
         }
     }
 
-    const handleSendingResearch = (value: string) => {
-        sendingResearchRef.current = value
-        if (sendingResearchRef) {
-            handleSidebarResearch(sendingResearchRef.current)
-        }
-        sendingResearchRef.current = null
-        navigate('/')
-        onClose(true)
-        
-    }
-
     const handleFirstFetch = (value: boolean) => {
         setFirstHistoryFetch(true)
     }
@@ -119,7 +108,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
                                return (
                                     <div 
                                         key={id + elem}
-                                        onClick={(e) => {e.stopPropagation(); handleSendingResearch(elem) }}
+                                        onClick={(e) => {e.stopPropagation(); handleSidebarResearch(fullSearchObjects[id].query); navigate("/"); onClose(true) }}
                                         className={`
                                             flex justify-between p-2 font-semibold text-md `
                                         }
@@ -166,7 +155,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
                     {
                         isDeleteOpen &&
                         <DeleteDialog 
-                            text={"Are you sure you want to delte this item from history ?"}
+                            text={"Are you sure you want to delete this item from history ?"}
                             isOpen={isDeleteOpen}
                             onClose={() => setIsDeleteOpen(false)}
                             item={fullObject}
