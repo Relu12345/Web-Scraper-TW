@@ -28,7 +28,7 @@ const Navbar: React.FC<NavbarProps> = (props) => {
     }
 
     return (
-        <nav className=" bg-white fixed w-full shadow-lg p-4 dark:bg-gray-900 slow-change"
+        <nav className=" bg-white fixed w-full shadow-lg p-4 z-10 dark:bg-gray-900 slow-change "
         >
             <div className="flex justify-between">
                 {/* Logo */}
@@ -36,7 +36,12 @@ const Navbar: React.FC<NavbarProps> = (props) => {
                     <button className="mx-3 mt-1 text-black dark:text-white cursor-pointer" onClick={props.toggleSidebar}>
                         <BsStack />
                     </button>
-                    FetchFlow
+                    <h1
+                        onClick={() => navigate("/")}
+                        className="cursor-pointer"
+                    >
+                        FetchFlow
+                    </h1>
                 </div>
 
                 {/* Navigation Links */}

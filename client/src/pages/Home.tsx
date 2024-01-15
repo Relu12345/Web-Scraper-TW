@@ -22,7 +22,7 @@ interface ResponseMessageText {
   authors: Array<string>,
   title: string,
   url: string,
-  source: string
+  source: Array<string>
 }
 
 const currentAge = new Date().getFullYear()
@@ -31,7 +31,7 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
   const [searchInput, setSearchInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [displayFilters, setDisplayFilters] = useState(false)
-  const [lastSearch, setLastSearch] = useState<string | null>(null)
+  const lastSearch = useRef<string | null>(null)
   const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
   const inputToSend = useRef<HTMLInputElement | null>(null)
   const [itemsDisplayed, setItemsDisplayed] = useState(0)
@@ -41,12 +41,14 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
   })
 
   useEffect(() => {
-    if (isResearched && isResearched != lastSearch) {
-      setLastSearch(isResearched)
+    console.log(lastSearch)
+    if (isResearched != null && isResearched !== lastSearch.current) {
       setSearchInput(isResearched)
       handleSendData()
+      lastSearch.current = isResearched
+      //setLastSearch(isResearched)
     }
-  }, [isResearched, searchInput, lastSearch])
+  }, [isResearched, searchInput , lastSearch ])
 
   const handleAgeFilter = (from: number, to: number) => {
     setAgeFilter({from, to})
@@ -61,9 +63,9 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
   const handleSendData = async () => {
     if (searchInput.length > 0) {
       setLoading(true)
-      console.log(ageFilter)
+
       const result = await searchText({text:searchInput, date: {from: ageFilter.from, to: ageFilter.to}})
-      
+
       if (result) {
         const data: ResponseMessage = await result.json()
         setSearchData(data.text)
@@ -105,7 +107,7 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
 
             {/* Search bar */}
             <div className='fiexed items-center justify-center md:text-center mt-6'>
-              <div className='relative w-full'>
+              <div className='w-full py-8'>
                 <input 
                   type="text"
                   id="text"
@@ -116,7 +118,7 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
                   ref={inputToSend}
                   onChange={(event) => {setSearchInput(event.target.value)}}
                   className={`
-                    mx-auto w-8/12 lg:w-10/12  border-2 border-gray-400 bg-white py-2.5 
+                    ml-7 lg:mx-auto w-9/12 lg:w-10/12  border-2 border-gray-400 bg-white py-3 
                     rounded-md px-2 focus:outline-none focus:border-black 
                     dark:bg-slate-900 dark:border-gray-400 
                     focus:dark:border-gray-200 dark:placeholder-gray-400 
@@ -126,7 +128,7 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
                 <button 
                   onClick={(e) =>{ e.stopPropagation(); setDisplayFilters(!displayFilters)}}
                   data-testid="toggle-button"
-                  className='relative mx-2 text-xl text-white p-3.5 top-1 rounded-md bg-gray-600 dark:bg-slate-600 '>
+                  className='mx-2 text-xl text-white p-3.5 rounded-md bg-gray-600 dark:bg-slate-600 '>
                   <VscSettings />
                 </button>
 

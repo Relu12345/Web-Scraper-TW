@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react"
+import React, { useEffect, useRef, useState} from "react"
 import { useNavigate } from "react-router"
 import Typewriter from '../utils/Typewriter'
 import { useWindowSize } from "../utils/useWindowSize"
@@ -34,6 +34,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
     const [firstHistoryFetch, setFirstHistoryFetch] = useState(true)
     const [fullObject, setFullObject] = useState<historyObj | null>(null)
     const [fullSearchObjects, setFullSearchObjects] = useState<historyObj[]>([])
+    const sendingResearchRef = useRef<null | string>(null)
 
     useEffect(() => {
         if (firstHistoryFetch) {
@@ -68,6 +69,17 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
             //console.log(historyData)
             setSidebarHistory(historyData)
         }
+    }
+
+    const handleSendingResearch = (value: string) => {
+        sendingResearchRef.current = value
+        if (sendingResearchRef) {
+            handleSidebarResearch(sendingResearchRef.current)
+        }
+        sendingResearchRef.current = null
+        navigate('/')
+        onClose(true)
+        
     }
 
     const handleFirstFetch = (value: boolean) => {
@@ -107,7 +119,7 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
                                return (
                                     <div 
                                         key={id + elem}
-                                        onClick={(e) => {e.stopPropagation(); handleSidebarResearch(fullSearchObjects[id].query); navigate("/");  onClose(true)}}
+                                        onClick={(e) => {e.stopPropagation(); handleSendingResearch(elem) }}
                                         className={`
                                             flex justify-between p-2 font-semibold text-md `
                                         }
