@@ -86,7 +86,7 @@ export const RegisterForm: React.FC<Props> = ({handleAuth}) => {
                         type="email" 
                         name="email"
                         required
-                        autoComplete="off"
+                        autoComplete={"off"}
                         className='block border-gray-300 font-semibold text-sm w-full border-2 rounded-md my-2 py-2 pl-10 dark:text-black'
                         value={email}
                         onChange={(e) => setEmail(e.target.value)} 

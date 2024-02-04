@@ -34,7 +34,6 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
   const lastSearch = useRef<string | null>(null)
   const [searchData, setSearchData] = useState<ResponseMessageText[]>([])
   const inputToSend = useRef<HTMLInputElement | null>(null)
-  const [itemsDisplayed, setItemsDisplayed] = useState(0)
   const [ageFilter, setAgeFilter] = useState({
     from: 1900,
     to: currentAge
@@ -77,9 +76,6 @@ export const Home: React.FC<Props> = ({searchElement, isResearched}) => {
     }
   }
 
-  const handleItemsDisplayed = (value: number) => {
-    setItemsDisplayed(value)
-  }
 
     return (
        loading ? 

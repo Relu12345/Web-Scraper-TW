@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useState} from 'react'
 import './index.css'
 import Login from './Authentication/Login'
 import {Routes, Route} from 'react-router-dom'
@@ -9,12 +9,6 @@ import { History } from './pages/History'
 import { Favorites } from './pages/Favorites'
 import { Home } from './pages/Home'
 import toast, {Toaster} from 'react-hot-toast'
-
-interface ResponseMessageText {
-  authors: Array<string>,
-  title: string,
-  url: string
-}
 
 
 const App  = () => {

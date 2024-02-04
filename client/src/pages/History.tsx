@@ -19,8 +19,6 @@ interface Props {
   handleResearch: (value: string) => void
 }
 
-const options = {day: '2-digit', month: 'short', year: 'numeric'}
-
 export const History: React.FC<Props> = ({handleConfirmationDialog, handleResearch}) => {
     const navigate=useNavigate()  
     const user = getUserInfoFromToken()?.sub?.username
