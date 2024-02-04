@@ -1,6 +1,6 @@
 # FetchFlow: Unleash the Power of Knowledge
 
-https://github.com/Relu12345/Web-Scraper-TW/assets/92850549/1fe72a9b-efe1-47d3-a090-34cc3634f100
+https://github.com/Relu12345/Web-Scraper-TW/assets/92850549/1eed95d5-ab85-4a7c-8f74-ded86a4c2860
 
 ## Overview
 Welcome to FetchFlow, your gateway to a seamless and sophisticated exploration of the vast world of scientific papers. This cutting-edge web application is meticulously crafted to provide users with a feature-rich and intuitive platform for accessing, managing, and organizing scientific literature. With a sleek and responsive design, FetchFlow ensures a delightful user experience.
