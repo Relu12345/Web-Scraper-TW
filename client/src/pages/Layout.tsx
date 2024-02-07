@@ -21,7 +21,7 @@ export const Layout: React.FC<Props> = ({handleTheme, searchElement, handleSideb
 
     useEffect(() => {
         handleSidebarState(isToggleStateSidebar)
-    }, [isToggleStateSidebar])
+    }, [isToggleStateSidebar, handleSidebarState])
 
 
     const toggleStateSidebar = () => {

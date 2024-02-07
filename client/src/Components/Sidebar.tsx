@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState} from "react"
+import React, { useEffect, useState} from "react"
 import { useNavigate } from "react-router"
 import Typewriter from '../utils/Typewriter'
 import { useWindowSize } from "../utils/useWindowSize"
@@ -34,14 +34,13 @@ const Sidebar: React.FC<sidebarProps> = ({isVisible, latestSearch, onClose, hand
     const [firstHistoryFetch, setFirstHistoryFetch] = useState(true)
     const [fullObject, setFullObject] = useState<historyObj | null>(null)
     const [fullSearchObjects, setFullSearchObjects] = useState<historyObj[]>([])
-    const sendingResearchRef = useRef<null | string>(null)
 
     useEffect(() => {
         if (firstHistoryFetch) {
             fetchHistory()
             setFirstHistoryFetch(false)
         }
-        if (latestSearch && latestSearch != previousItem) {
+        if (latestSearch && latestSearch !== previousItem) {
             fetchHistory()
             setPreviousItem(latestSearch)
         }

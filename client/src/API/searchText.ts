@@ -1,5 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import { getTokenFromCookies, getUserInfoFromToken } from "./verifyToken";
+import { getTokenFromCookies } from "./verifyToken";
 
 interface SearchProps {
     text: string,

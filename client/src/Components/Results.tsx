@@ -298,7 +298,7 @@ const Results: React.FC<SearchedData> = ({searchedData}) => {
                                                     <img 
                                                         src={GoogleScholarIcon} 
                                                         alt="google scholar"
-                                                        width={10}
+                                                        width={'30vh'}
                                                         className='mx-2'
                                                     /> :
                                                     <img 
